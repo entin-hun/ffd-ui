@@ -12,8 +12,8 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #884d28;
-$secondary: #26a69a;
+$primary: #006666;
+$secondary: #ccf5f5;
 $accent: #9c27b0;
 
 $dark: #1d1d1d;
@@ -23,3 +23,58 @@ $positive: #21ba45;
 $negative: #c10015;
 $info: #31ccec;
 $warning: #f2c037;
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@1,500&family=Montserrat:wght@500&display=swap');
+
+$typography-font-family: 'Montserrat', sans-serif !default;
+
+$chart-1: #00cccc;
+$chart-2: #33ff00;
+$chart-3: #006666;
+$chart-4: #00ffff;
+$chart-5: #3366ff;
+$chart-6: #0000ff;
+$chart-7: #cc00ff;
+
+.text-chart-1 {
+  color: $chart-1 !important;
+}
+.bg-chart-1 {
+  background: $chart-1 !important;
+}
+.text-chart-2 {
+  color: $chart-2 !important;
+}
+.bg-chart-2 {
+  background: $chart-2 !important;
+}
+.text-chart-3 {
+  color: $chart-3 !important;
+}
+.bg-chart-3 {
+  background: $chart-3 !important;
+}
+.text-chart-4 {
+  color: $chart-4 !important;
+}
+.bg-chart-4 {
+  background: $chart-4 !important;
+}
+.text-chart-5 {
+  color: $chart-5 !important;
+}
+.bg-chart-5 {
+  background: $chart-5 !important;
+}
+.text-chart-6 {
+  color: $chart-6 !important;
+}
+.bg-chart-6 {
+  background: $chart-6 !important;
+}
+.text-chart-7 {
+  color: $chart-7 !important;
+}
+.bg-chart-7 {
+  background: $chart-7 !important;
+}

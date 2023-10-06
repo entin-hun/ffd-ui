@@ -1,21 +1,15 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header>
-      <q-img
-        src="../assets/solarpunk_essence_food_header.jpg"
-        class="full-width"
-      />
-    </q-header>
-
     <div class="row items-center justify-evenly">
-      <q-page-container style="max-width: 1000px">
+      <q-page-container style="max-width: 1000px" class="col-12">
+        <div class="q-ma-xl">
+          <q-img src="../assets/logo.png" class="full-width" />
+        </div>
         <router-view />
+        <div class="row justify-center bg-primary text-white">
+          <span class="q-pa-sm">Made with 🥦 by FAIRFOODDATA, LDA.</span>
+        </div>
       </q-page-container>
     </div>
-    <q-footer>
-      <div class="row justify-center">
-        <p class="q-pa-sm q-pt-lg">Made with 🥦 by FAIRFOODDATA, LDA.</p>
-      </div>
-    </q-footer>
   </q-layout>
 </template>
