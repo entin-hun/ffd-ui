@@ -38,18 +38,37 @@ const props = defineProps<{
   enabledFoods: FoodNutrients[];
 }>();
 
-const chartData = computed(
-  (): ChartData<'bar'> => ({
+const chartData = computed((): ChartData<'bar'> => {
+  let total = 0;
+
+  return {
     labels: [''],
-    datasets: props.allFoods.map((food) => ({
-      label: food.instance.type,
-      data: [getEnabledAmount(food)],
-      backgroundColor: colors.getPaletteColor(food.color),
-      borderRadius: Number.MAX_VALUE,
-      borderSkipped: false,
-    })),
-  })
-);
+    datasets: props.allFoods.map((food) => {
+      const amount = getEnabledAmount(food);
+
+      const roundLeft = total === 0 ? Number.MAX_VALUE : 0;
+      const roundRight =
+        total + amount === enabledAmounts.value ? Number.MAX_VALUE : 0;
+
+      const result = {
+        label: food.instance.type,
+        data: [amount],
+        backgroundColor: colors.getPaletteColor(food.color),
+        borderRadius: {
+          topLeft: roundLeft,
+          bottomLeft: roundLeft,
+          topRight: roundRight,
+          bottomRight: roundRight,
+        },
+        borderSkipped: false,
+      };
+
+      total += amount;
+
+      return result;
+    }),
+  };
+});
 
 const enabledAmounts = computed(() =>
   props.allFoods

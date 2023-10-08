@@ -16,7 +16,6 @@
 <script setup lang="ts">
 import { Ref, computed, ref, watch } from 'vue';
 import { FoodNutrients } from './NutrientCharts.vue';
-import { chartColors } from './utils';
 
 const props = defineProps<{
   foodNutrients: FoodNutrients[];
