@@ -1,7 +1,6 @@
 export type UrlOr<T> = string | T | FetchError;
 
 export interface FetchError {
-  responseCode: number;
   errorMessage: string;
 }
 
@@ -95,7 +94,7 @@ export interface FoodInstance {
   category: 'food';
   type: string;
   iDs?: IDs;
-  nutrients?: FoodNutrients[];
+  nutrients?: FallbackFoodNutrients[];
   ownerId?: string;
   expiryDate?: number;
   format?: string;
@@ -115,7 +114,7 @@ export interface CartridgeInstance {
   size: string;
 }
 
-export interface FoodNutrients {
+export interface FallbackFoodNutrients {
   amount: number;
   iDs: IDs;
 }
@@ -202,7 +201,7 @@ export const example: Pokedex = {
       amount: 3,
       currency: 'EUR',
     },
-    timestamp: 1684328200,
+    timestamp: 1696480437,
     temperatureRange: {
       min: -45,
       max: 22,
@@ -224,7 +223,7 @@ export const example: Pokedex = {
           method: 'sea',
           fuelType: 'diesel',
           weight: 0.00000004,
-          deparetureTime: 1684326200,
+          deparetureTime: 1696475437,
           duration: 1036800,
         },
         instance: {
@@ -243,7 +242,7 @@ export const example: Pokedex = {
               outputs: '',
               licenseFee: '0_DAI',
             },
-            timestamp: 1684318200,
+            timestamp: 1696465437,
             duration: 600,
             location: {
               type: 'Feature',
@@ -278,7 +277,7 @@ export const example: Pokedex = {
                   method: 'land',
                   fuelType: 'electric',
                   weight: 0.0002,
-                  deparetureTime: 1684315200,
+                  deparetureTime: 1696461437,
                   duration: 18000,
                 },
                 instance: {
@@ -303,7 +302,7 @@ export const example: Pokedex = {
                   method: 'air',
                   fuelType: 'kerosene',
                   weight: 0.00000001,
-                  deparetureTime: 1684305200,
+                  deparetureTime: 1696460437,
                   duration: 21600,
                 },
                 instance: {
@@ -326,7 +325,7 @@ export const example: Pokedex = {
                       licenseFee: '0_DAI',
                       note: '',
                     },
-                    timestamp: 1684318200,
+                    timestamp: 1696457437,
                     duration: 1200,
                     location: {
                       type: 'Feature',
@@ -349,7 +348,7 @@ export const example: Pokedex = {
                           method: 'land',
                           fuelType: 'petrol',
                           weight: 0.0002,
-                          deparetureTime: 1684316200,
+                          deparetureTime: 1696453437,
                           duration: 21600,
                         },
                         instance: {
@@ -377,7 +376,7 @@ export const example: Pokedex = {
                                 'Particle size (micron)': 7,
                               },
                             },
-                            timestamp: 1684315200,
+                            timestamp: 1696449437,
                             duration: 360,
                             location: {
                               type: 'Feature',
@@ -400,7 +399,7 @@ export const example: Pokedex = {
                                   method: 'sea',
                                   fuelType: 'diesel',
                                   weight: 0.00000004,
-                                  deparetureTime: 1684326200,
+                                  deparetureTime: 1696400437,
                                   duration: 1036800,
                                 },
                                 instance:
@@ -411,7 +410,7 @@ export const example: Pokedex = {
                                   method: 'sea',
                                   fuelType: 'diesel',
                                   weight: 0.00000004,
-                                  deparetureTime: 1684326200,
+                                  deparetureTime: 1696409437,
                                   duration: 1036800,
                                 },
                                 instance: {
@@ -439,7 +438,7 @@ export const example: Pokedex = {
                                       licenseFee: '0_DAI',
                                       note: 'Mango can be whole, or sliced/diced.',
                                     },
-                                    timestamp: 1696339437,
+                                    timestamp: 1696389437,
                                     duration: 300,
                                     location: {
                                       type: 'Feature',
@@ -462,7 +461,7 @@ export const example: Pokedex = {
                                           method: 'land',
                                           fuelType: 'diesel',
                                           weight: 1.0,
-                                          deparetureTime: 1696339437,
+                                          deparetureTime: 1696349437,
                                           duration: 3600,
                                         },
                                         instance: {
