@@ -1,15 +1,15 @@
 <template>
-  <div style="width: 10em">
-    {{ nutrient.name }}
-  </div>
-  <div
-    class="chart-container"
-    style="position: relative; height: 3vh; width: 40%"
-  >
-    <Bar id="chart" :options="chartOptions" :data="chartData" />
-  </div>
-  <div style="width: 8em" class="q-px-sm">
-    {{ Math.round(enabledAmounts * 100) / 100 }} {{ nutrient.unitName }}
+  <div class="row col-12">
+    <div class="col-3">
+      {{ nutrient.name }}
+    </div>
+    <div class="chart-container col-7" style="position: relative; height: 2em">
+      <Bar id="chart" :options="chartOptions" :data="chartData" />
+      <!-- Middle column -->
+    </div>
+    <div class="col-2 q-px-md">
+      {{ Math.round(enabledAmounts * 100) / 100 }} {{ nutrient.unitName }}
+    </div>
   </div>
 </template>
 
@@ -78,11 +78,13 @@ const enabledAmounts = computed(() =>
 
 function getEnabledAmount(food: FoodNutrients): number {
   return props.enabledFoods.includes(food)
-    ? food.nutrients.find(
-        (foodNutrient) =>
-          'nutrient' in foodNutrient &&
-          foodNutrient.nutrient?.id === props.nutrient.id
-      )?.amount || 0
+    ? (food.nutrients.constructor === Array &&
+        food.nutrients.find(
+          (foodNutrient) =>
+            'nutrient' in foodNutrient &&
+            foodNutrient.nutrient?.id === props.nutrient.id
+        )?.amount) ||
+        0
     : 0;
 }
 
@@ -90,9 +92,11 @@ const totalAmounts = computed(() =>
   props.allFoods
     .map(
       (food) =>
-        food.nutrients.find(
-          (nutrient) => nutrient.nutrient?.id === props.nutrient.id
-        )?.amount || 0
+        (food.nutrients.constructor === Array &&
+          food.nutrients.find(
+            (nutrient) => nutrient.nutrient?.id === props.nutrient.id
+          )?.amount) ||
+        0
     )
     .reduce((prev, cur) => prev + cur, 0)
 );
