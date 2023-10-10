@@ -1,10 +1,25 @@
 <template>
   <FoodDataBanner icon="info" text="Details" />
-  <div class="q-pa-md"><q-tree :nodes="nodes" node-key="key"> </q-tree></div>
+  <div class="q-pa-md">
+    <q-tree :nodes="nodes" node-key="key" ref="tree" @after-show="openDone">
+      <template v-slot:default-header="prop">
+        <div :id="`tree-node-${prop.node.key}`">
+          <div class="row items-center">
+            <q-icon
+              :name="prop.node.icon"
+              :color="prop.node.iconColor"
+              class="q-pr-sm"
+            />
+            <div>{{ prop.node.label }}</div>
+          </div>
+        </div>
+      </template>
+    </q-tree>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { QTreeNode } from 'quasar';
+import { QTree, QTreeNode } from 'quasar';
 import {
   Process,
   ProductInstance,
@@ -25,7 +40,7 @@ import {
   SaleProcess,
 } from '../models';
 import { DateTime, Duration } from 'luxon';
-import { computed } from 'vue';
+import { Ref, computed, onMounted, ref } from 'vue';
 import { getProcessIcon, getProcessLabel } from './utils';
 import FoodDataBanner from './FoodDataBanner.vue';
 
@@ -35,12 +50,62 @@ const props = defineProps<{
   data: SaleProcess;
 }>();
 
+const openProcess = (processId: number) => {
+  if (tree.value === undefined) return;
+
+  if (findProcess(tree.value.nodes[0], processId)) openingProcess = processId;
+};
+
+defineExpose({ openProcess });
+
+function findProcess(node: QTreeNode, id: number): boolean {
+  if (
+    node.key === id ||
+    node.children?.some((child) => findProcess(child, id))
+  ) {
+    tree.value?.setExpanded(node.key, true);
+    return true;
+  }
+
+  return false;
+}
+
+// function needsExpand(): boolean {
+
+// }
+
+let openingProcess: number | undefined;
+
+function openDone() {
+  if (openingProcess === undefined || tree.value === undefined) return;
+
+  const node = tree.value.getNodeByKey(openingProcess);
+  const element = node
+    ? document.getElementById(`tree-node-${node.key}`)
+    : undefined;
+  if (element != undefined) element.scrollIntoView({ behavior: 'smooth' });
+
+  openingProcess = undefined;
+}
+
+const tree: Ref<InstanceType<typeof QTree> | undefined> = ref();
+
 function addNodesIds(node: QTreeNode): QTreeNode {
   return {
     key: keyCounter++,
     ...node,
     children: node.children?.map((child) => addNodesIds(child)),
   };
+}
+
+onMounted(() => expandNodes());
+
+function expandNodes() {
+  tree.value?.setExpanded(nodes.value[0].key, true);
+  nodes.value[0].children?.forEach((child) => {
+    if (child.children !== undefined && child.children.length > 0)
+      tree.value?.setExpanded(child.key, true);
+  });
 }
 
 const nodes = computed(() => processToNodes(props.data).map(addNodesIds));
@@ -51,6 +116,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
   const basicInfo = {
     label: getProcessLabel(process),
     icon: getProcessIcon(process),
+    key: process.timestamp,
   };
 
   switch (process.type) {
@@ -278,8 +344,8 @@ function inputInstancesToNodes(
   return inputInstances
     .map((inputInstance) =>
       'transport' in inputInstance
-        ? componentToNodes(inputInstance.instance, inputInstance.transport)
-        : componentToNodes(inputInstance.instance)
+        ? instanceToNodes(inputInstance.instance, inputInstance.transport)
+        : instanceToNodes(inputInstance.instance)
     )
     .flat();
 }
@@ -309,40 +375,37 @@ const transportIconMap: Map<TransportMethod, string> = new Map([
   ['sea', 'directions_boat'],
 ]);
 
-function componentToNodes(
-  component: UrlOr<ProductInstance>,
+function instanceToNodes(
+  instance: UrlOr<ProductInstance>,
   transport?: Transport
 ): QTreeNode[] {
-  return typeof component === 'string'
+  return instance === undefined
+    ? []
+    : typeof instance === 'string'
     ? [
         {
-          label: `Unresolved URL: ${component}`,
+          label: `Unresolved URL: ${instance}`,
           icon: 'tag',
         },
       ]
-    : 'errorMessage' in component
+    : 'errorMessage' in instance
     ? [
         {
-          label: component.errorMessage,
+          label: instance.errorMessage,
           icon: 'error_outline',
           iconColor: 'red',
         },
       ]
     : [
-        ...(component.category === 'food'
-          ? [foodComponentToNode(component, transport)]
-          : component.category === 'cartridge'
-          ? [cartridgeComponentToNode(component, transport)]
+        ...(instance.category === 'food'
+          ? [foodInstanceToNode(instance, transport)]
+          : instance.category === 'cartridge'
+          ? [cartridgeInstanceToNode(instance, transport)]
           : []),
       ];
 }
 
-// const componentCategoryIconMap: Map<string, string> = new Map([
-//   ['food', 'local_dining'],
-//   ['cartridge', 'change_history'],
-// ]);
-
-function foodComponentToNode(
+function foodInstanceToNode(
   food: FoodInstance,
   transport?: Transport
 ): QTreeNode {
@@ -371,7 +434,7 @@ function foodComponentToNode(
   };
 }
 
-function cartridgeComponentToNode(
+function cartridgeInstanceToNode(
   cartridge: CartridgeInstance,
   transport?: Transport
 ): QTreeNode {
@@ -474,4 +537,3 @@ function fdcIdToNodes(id?: IDs): QTreeNode[] {
     : [];
 }
 </script>
-../models

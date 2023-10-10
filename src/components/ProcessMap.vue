@@ -31,6 +31,10 @@
               )
             }}
           </div>
+          <a href="#" @click.prevent="emit('showProcess', process.timestamp)"
+            >Go to details</a
+          >
+          <q-icon name="arrow_right" />
         </template>
         <template v-slot:default>
           <q-avatar
@@ -59,6 +63,10 @@ import FoodDataBanner from './FoodDataBanner.vue';
 
 const props = defineProps<{
   data: SaleProcess;
+}>();
+
+const emit = defineEmits<{
+  showProcess: [timestamp: number];
 }>();
 
 const processes = computed(() => [props.data, ...findProcesses(props.data)]);
