@@ -16,6 +16,45 @@ declare module '@vue/runtime-core' {
 // for each client)
 const api = axios.create({ baseURL: 'https://api.example.com' });
 
+let outstanding = 0;
+let complete = 0;
+let currentValue = 0;
+
+import { LoadingBar } from 'quasar';
+
+function requestFinished<T>(result: T): T {
+  outstanding--;
+  complete++;
+  const value = (complete / (complete + outstanding)) * 100;
+  LoadingBar.increment(value - currentValue);
+  if (outstanding == 0) {
+    LoadingBar.stop();
+  }
+  return result;
+}
+
+axios.interceptors.request.use(
+  (config) => {
+    outstanding++;
+    if (outstanding === 1) {
+      LoadingBar.start(1);
+      currentValue = 0;
+    }
+    return config;
+  },
+  (error) => Promise.reject(requestFinished(Promise.reject(error)))
+);
+
+axios.interceptors.response.use(requestFinished, (error) =>
+  Promise.reject(requestFinished(error))
+);
+
+LoadingBar.setDefaults({
+  color: 'primary',
+  size: '15px',
+  position: 'bottom',
+});
+
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
