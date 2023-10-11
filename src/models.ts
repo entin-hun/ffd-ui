@@ -23,7 +23,7 @@ export type Process =
 export interface GenericProcess {
   timestamp: number;
   duration?: number;
-  location: Geo;
+  location: GeoJSON.Point;
   temperatureRange: TemperatureRange;
   inputInstances: (TransportedInputInstance | LocalInputInstance)[];
   impacts?: Impact[];
@@ -57,7 +57,6 @@ export interface BlendingProcess extends GenericProcess {
 export interface SaleProcess extends GenericProcess {
   type: 'sale';
   price: Price;
-  location: Geo;
 }
 
 export interface HarvestProcess extends GenericProcess {
@@ -207,15 +206,8 @@ export const example: Pokedex = {
       max: 22,
     },
     location: {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: {
-          lat: 47.952455,
-          long: 19.027148,
-        },
-      },
-      properties: {},
+      type: 'Point',
+      coordinates: [19.027148, 47.952455],
     },
     inputInstances: [
       {
@@ -245,15 +237,8 @@ export const example: Pokedex = {
             timestamp: 1696465437,
             duration: 600,
             location: {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: {
-                  lat: 41.259187,
-                  long: 1.777312,
-                },
-              },
-              properties: {},
+              type: 'Point',
+              coordinates: [1.777312, 41.259187],
             },
             temperatureRange: {
               min: -45,
@@ -328,16 +313,10 @@ export const example: Pokedex = {
                     timestamp: 1696457437,
                     duration: 1200,
                     location: {
-                      type: 'Feature',
-                      geometry: {
-                        type: 'Point',
-                        coordinates: {
-                          lat: 51.412577,
-                          long: -2.567003,
-                        },
-                      },
-                      properties: {},
+                      type: 'Point',
+                      coordinates: [-2.567003, 51.412577],
                     },
+
                     temperatureRange: {
                       min: -45,
                       max: 22,
@@ -379,16 +358,12 @@ export const example: Pokedex = {
                             timestamp: 1696449437,
                             duration: 360,
                             location: {
-                              type: 'Feature',
-                              geometry: {
-                                type: 'Point',
-                                coordinates: {
-                                  lat: 45.48027689773346,
-                                  long: 10.252544038414928,
-                                },
-                              },
-                              properties: {},
+                              type: 'Point',
+                              coordinates: [
+                                10.252544038414928, 45.48027689773346,
+                              ],
                             },
+
                             temperatureRange: {
                               min: -45,
                               max: 22,
@@ -441,15 +416,10 @@ export const example: Pokedex = {
                                     timestamp: 1696389437,
                                     duration: 300,
                                     location: {
-                                      type: 'Feature',
-                                      geometry: {
-                                        type: 'Point',
-                                        coordinates: {
-                                          lat: -1.364037175459345,
-                                          long: -48.3524439200693,
-                                        },
-                                      },
-                                      properties: {},
+                                      type: 'Point',
+                                      coordinates: [
+                                        -48.3524439200693, -1.364037175459345,
+                                      ],
                                     },
                                     temperatureRange: {
                                       min: -38,
@@ -482,15 +452,10 @@ export const example: Pokedex = {
                                             type: 'harvest',
                                             timestamp: 1696339437,
                                             location: {
-                                              type: 'Feature',
-                                              geometry: {
-                                                type: 'Point',
-                                                coordinates: {
-                                                  lat: -7.198175,
-                                                  long: -59.886277,
-                                                },
-                                              },
-                                              properties: {},
+                                              type: 'Point',
+                                              coordinates: [
+                                                -59.886277, -7.198175,
+                                              ],
                                             },
                                             temperatureRange: {
                                               min: -45,
@@ -538,7 +503,6 @@ export const example: Pokedex = {
                                 },
                               },
                             ],
-
                             machineInstance: {
                               category: 'machine_milling',
                               ownerId: 'johndoehub.com',

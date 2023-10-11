@@ -26,7 +26,6 @@ import {
   FoodInstance,
   IDs,
   CartridgeInstance,
-  Geo,
   Transport,
   TransportMethod,
   LocalInputInstance,
@@ -300,9 +299,9 @@ function hrToNodes(hr: Hr): QTreeNode[] {
   ];
 }
 
-function locationToNode(location: Geo): QTreeNode {
+function locationToNode(location: GeoJSON.Point): QTreeNode {
   return {
-    label: `Location: [${location.geometry.coordinates.lat}, ${location.geometry.coordinates.long}]`,
+    label: `Location: [${location.coordinates[0]}, ${location.coordinates[1]}]`,
     icon: 'location_on',
   };
 }

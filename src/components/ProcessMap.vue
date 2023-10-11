@@ -7,14 +7,15 @@
       style="height: 400px"
       :center="[0, 0]"
       :zoom="1"
+      @mb-load="mapLoaded"
     >
       <MapboxNavigationControl />
       <MapboxMarker
         v-for="process in processes"
         :key="process.timestamp"
         :lng-lat="[
-          process.location.geometry.coordinates.long,
-          process.location.geometry.coordinates.lat,
+          process.location.coordinates[0],
+          process.location.coordinates[1],
         ]"
         :popup="{
           offset: [0, -30],
@@ -44,6 +45,12 @@
           />
         </template>
       </MapboxMarker>
+      <MapboxLayer
+        v-for="transport in transports"
+        :key="transport.id"
+        :options="transport.layer"
+        :id="transport.id"
+      />
     </MapboxMap>
   </div>
 </template>
@@ -54,12 +61,16 @@ import {
   MapboxMap,
   MapboxNavigationControl,
   MapboxMarker,
+  MapboxLayer,
 } from '@studiometa/vue-mapbox-gl';
 import { Process, SaleProcess } from 'src/models';
 import { computed } from 'vue';
 import { getProcessIcon, getProcessLabel } from './utils';
 import { DateTime } from 'luxon';
 import FoodDataBanner from './FoodDataBanner.vue';
+import GeoJSON from 'geojson';
+import MapboxGl from 'mapbox-gl';
+import { colors } from 'quasar';
 
 const props = defineProps<{
   data: SaleProcess;
@@ -84,5 +95,115 @@ function findProcesses(process: Process): Process[] {
       )
       .flat(),
   ];
+}
+
+function mapLoaded({ target }: any) {
+  const map = target as MapboxGl.Map;
+
+  // technique based on https://jsfiddle.net/2mws8y3q/
+  // an array of valid line-dasharray values, specifying the lengths of the alternating dashes and gaps that form the dash pattern
+  const dashArraySequence = [
+    [0, 4, 3],
+    [0.5, 4, 2.5],
+    [1, 4, 2],
+    [1.5, 4, 1.5],
+    [2, 4, 1],
+    [2.5, 4, 0.5],
+    [3, 4, 0],
+    [0, 0.5, 3, 3.5],
+    [0, 1, 3, 3],
+    [0, 1.5, 3, 2.5],
+    [0, 2, 3, 2],
+    [0, 2.5, 3, 1.5],
+    [0, 3, 3, 1],
+    [0, 3.5, 3, 0.5],
+  ];
+
+  let step = 0;
+
+  function animateDashArray(timestamp: number) {
+    // Update line-dasharray using the next value in dashArraySequence. The
+    // divisor in the expression `timestamp / 50` controls the animation speed.
+    const newStep = Math.floor((timestamp / 50) % dashArraySequence.length);
+    if (newStep !== step) {
+      transports.value.forEach((transport) => {
+        map.setPaintProperty(
+          transport.id,
+          'line-dasharray',
+          dashArraySequence[step]
+        );
+      });
+      step = newStep;
+    }
+    // Request the next frame of the animation.
+    requestAnimationFrame(animateDashArray);
+  }
+
+  // start the animation
+  requestAnimationFrame(animateDashArray);
+}
+
+interface InstanceTransport {
+  from: GeoJSON.Position;
+  to: GeoJSON.Position;
+  cargo: string;
+}
+
+interface TransportLayer {
+  id: string;
+  layer: MapboxGl.AnyLayer;
+}
+
+const transports = computed((): TransportLayer[] =>
+  getTransports(props.data).map<TransportLayer>((transport) => ({
+    id: transport.cargo,
+    layer: {
+      id: `layer-${transport.cargo}`,
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                coordinates: [transport.from, transport.to],
+                type: 'LineString',
+              },
+            },
+          ],
+        },
+      },
+      paint: {
+        'line-color': colors.getPaletteColor('secondary'),
+        'line-width': 6,
+        'line-opacity': 0.6,
+      },
+    },
+  }))
+);
+
+function getTransports(process: Process): InstanceTransport[] {
+  return process.inputInstances
+    .map((inputInstance) =>
+      typeof inputInstance.instance === 'object' &&
+      'type' in inputInstance.instance &&
+      inputInstance.instance.process !== undefined
+        ? [
+            {
+              from: inputInstance.instance.process.location.coordinates,
+              to: process.location.coordinates,
+              cargo: inputInstance.instance.type,
+            } as InstanceTransport,
+            ...getTransports(inputInstance.instance.process),
+          ]
+        : undefined
+    )
+    .flat()
+    .filter(
+      (transport): transport is InstanceTransport => transport !== undefined
+    );
 }
 </script>
