@@ -19,7 +19,6 @@
       >
     </q-banner>
     <NutrientCharts :data="data" />
-    <FoodFacts :data="data" />
     <ProcessMap :data="data" @show-process="showProcess" />
     <FoodChainTree :data="data" ref="tree" />
   </div>
@@ -39,7 +38,6 @@
 import NutrientCharts from 'components/NutrientCharts.vue';
 import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
-import FoodFacts from './FoodFacts.vue';
 
 import { Ref, computed, onMounted, ref } from 'vue';
 // import { useFetch } from '@vueuse/core';

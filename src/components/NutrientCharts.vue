@@ -16,6 +16,7 @@
         :enabled-foods="enabledFoodNutrients"
       />
     </div>
+    <FoodImpacts :enabled-foods="enabledFoodNutrients" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ import {
 } from 'src/fdc_api/generated';
 import { chartColors } from './utils';
 import NutrientBarChart from './NutrientBarChart.vue';
+import FoodImpacts from './FoodImpacts.vue';
 
 const props = defineProps<{
   data: SaleProcess;
