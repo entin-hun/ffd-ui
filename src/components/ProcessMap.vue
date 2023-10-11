@@ -1,5 +1,5 @@
 <template>
-  <FoodDataBanner icon="map" text="Map of Activities" />
+  <FoodDataBanner icon="map">Map of Activities</FoodDataBanner>
   <div class="q-pa-md">
     <MapboxMap
       accessToken="pk.eyJ1Ijoic3phYm9sY3NzemVrZWx5aSIsImEiOiJjbG5kcDUxcm4wNzZ5MmltbjdldmhtODg5In0.T4uW0nekNUbIzLEfg6INNA"

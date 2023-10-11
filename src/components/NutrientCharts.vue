@@ -1,6 +1,27 @@
 <template>
   <div class="q-pb-lg">
-    <FoodDataBanner icon="percent" text="Nutrients" />
+    <FoodDataBanner icon="percent">
+      Nutrients
+      <q-icon name="info">
+        <q-popup-proxy>
+          <q-banner>
+            <div style="max-width: 30em">
+              Actual nutritional values may vary due to natural variations in
+              ingredients and processing. Nutritional values are rounded,
+              according to regulatory guidelines. Your total RDI values may be
+              higher or lower depending on your calorie needs. While we strive
+              to keep the nutritional information accurate, the values provided
+              are estimates and may not reflect all accurate values. Nutritional
+              information was sourced from the
+              <a href="https://fdc.nal.usda.gov/fdc-app.html#/"
+                >United States Department of Agriculture</a
+              >
+              upon loading the site.
+            </div>
+          </q-banner>
+        </q-popup-proxy>
+      </q-icon>
+    </FoodDataBanner>
     <FoodInstanceSelector
       :food-nutrients="foodNutrients"
       @change="foodsChanged"
@@ -43,6 +64,8 @@ interface ResolvedFallbackNutrient {
   amount: number;
   nutrient: Nutrient;
 }
+
+const disclaimerVisible = ref(false);
 
 export interface FoodNutrients {
   instance: FoodInstance;

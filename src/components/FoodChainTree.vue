@@ -1,5 +1,5 @@
 <template>
-  <FoodDataBanner icon="info" text="Details" />
+  <FoodDataBanner icon="info">Details</FoodDataBanner>
   <div class="q-pa-md">
     <q-tree :nodes="nodes" node-key="key" ref="tree" @after-show="openDone">
       <template v-slot:default-header="prop">
