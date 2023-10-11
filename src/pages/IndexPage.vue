@@ -9,6 +9,11 @@
       Error: URL arguments missing
     </p> -->
     <!-- <FoodData v-else :auth="args.a" :contract="args.c" :token="args.t" /> -->
+    <div class="q-ma-sm">
+      We thought the below data could be essential to know what you eat, so we
+      made it easily accessible. These values were published via Ethereum Swarm,
+      the censorship-resistant decentralized storage.
+    </div>
     <div class="row">
       <div class="col-12"><FoodData auth="" contract="" token="" /></div>
     </div>
