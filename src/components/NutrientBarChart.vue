@@ -121,7 +121,7 @@ const chartOptions = computed(
           props.scale === 'rdi_child' ||
           props.scale === 'rdi_female' ||
           props.scale === 'rdi_male'
-            ? 200
+            ? 50
             : totalAmounts.value,
         ticks: {
           display: false,
