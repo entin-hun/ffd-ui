@@ -68,14 +68,17 @@ export interface Price {
   currency: string;
 }
 
-export interface LocalInputInstance {
+export interface GenericInputInstance {
   instance: UrlOr<ProductInstance>;
+  quantity: number;
+}
+export type LocalInputInstance = GenericInputInstance;
+
+export interface TransportedInputInstance extends GenericInputInstance {
+  transport: Transport;
 }
 
-export interface TransportedInputInstance {
-  transport: Transport;
-  instance: UrlOr<ProductInstance>;
-}
+export type InputInstance = LocalInputInstance | TransportedInputInstance;
 
 export interface Transport {
   method: TransportMethod;
@@ -98,7 +101,6 @@ export interface FoodInstance {
   expiryDate?: number;
   format?: string;
   bio: boolean;
-  quantity?: number;
   grade?: string;
   size?: string;
   process?: Process;
@@ -108,7 +110,6 @@ export interface CartridgeInstance {
   category: 'cartridge';
   ownerId: string;
   bio: boolean;
-  quantity: number;
   grade: string;
   size: string;
 }
@@ -117,26 +118,6 @@ export interface FallbackFoodNutrients {
   amount: number;
   iDs: IDs;
 }
-
-export type Geo = FeatureGeo; /* | OtherGeo */
-
-export interface FeatureGeo {
-  type: 'Feature';
-  geometry: Geometry;
-  properties: Properties;
-}
-
-export type Geometry = PointGeometry; /* | LineGeomtry | AreaGeometry | ... */
-
-export interface PointGeometry {
-  type: 'Point';
-  coordinates: {
-    lat: number;
-    long: number;
-  };
-}
-
-export type Properties = object;
 
 export interface MachineInstance {
   category: string;
@@ -162,7 +143,7 @@ export interface KnowHow {
   hash: string;
   inputs: string;
   outputs: string;
-  licenseFee: string;
+  licenseFee: Price;
   note?: string | object;
 }
 
@@ -187,7 +168,6 @@ export interface IDs {
   id: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const example: Pokedex = {
   description:
     'PGgxIHN0eWxlPSJjb2xvcjogIzJlNmM4MDsiPldlbGNvbWUgdG8gdGhlIHRyYW5zcGFyZW50IGZvb2QgY2hhaW4hPC9oMT4NCjxwPldlIHRob3VnaHQgdGhlIGJlbG93IGRhdGEgY291bGQgYmUgZXNzZW50aWFsIHRvIGtub3cgd2hhdCB5b3UgZWF0LCBzbyB3ZSBtYWRlIGl0IGVhc2lseSBhY2Nlc3NpYmxlLiBUaGVzZSB2YWx1ZXMgd2VyZSBwdWJsaXNoZWQgdmlhIEV0aGVyZXVtIFN3YXJtLCB0aGUgY2Vuc29yc2hpcC1yZXNpc3RhbnQgZGVjZW50cmFsaXplZCBzdG9yYWdlLCB3aGljaCA8YSBocmVmPSJodHRwczovL2FkbWluLm1vcmFsaXMuaW8vcGxheWdyb3VuZCIgdGFyZ2V0PSJfYmxhbmsiPnlvdSBjYW4gdmVyaWZ5IGhlcmU8L2E+LjwvcD4=',
@@ -218,6 +198,7 @@ export const example: Pokedex = {
           deparetureTime: 1696475437,
           duration: 1036800,
         },
+        quantity: 400,
         instance: {
           category: 'food',
           type: 'strawberry_kiwi_cake',
@@ -232,7 +213,10 @@ export const example: Pokedex = {
               hash: 'cf880b8eeac5093fa27b0825906c600685',
               inputs: '',
               outputs: '',
-              licenseFee: '0_DAI',
+              licenseFee: {
+                amount: 1,
+                currency: 'DAI',
+              },
             },
             timestamp: 1696465437,
             duration: 600,
@@ -265,11 +249,11 @@ export const example: Pokedex = {
                   deparetureTime: 1696461437,
                   duration: 18000,
                 },
+                quantity: 1,
                 instance: {
                   category: 'cartridge',
                   ownerId: 'essencefood.tech',
                   bio: false,
-                  quantity: 1,
                   grade: 'A',
                   size: '3x2',
                 },
@@ -278,9 +262,9 @@ export const example: Pokedex = {
                 instance: {
                   category: 'food',
                   type: 'water',
-                  quantity: 1,
                   bio: true,
                 },
+                quantity: 1,
               },
               {
                 transport: {
@@ -290,6 +274,7 @@ export const example: Pokedex = {
                   deparetureTime: 1696460437,
                   duration: 21600,
                 },
+                quantity: 600,
                 instance: {
                   category: 'food',
                   type: 'strawberry_kiwi_powder_blend',
@@ -297,7 +282,6 @@ export const example: Pokedex = {
                   expiryDate: 1984317400,
                   format: 'powder',
                   bio: false,
-                  quantity: 8,
                   grade: 'A',
                   size: '3',
                   process: {
@@ -307,7 +291,10 @@ export const example: Pokedex = {
                       hash: 'cf880b8eeac5093fa27b0825906c600685',
                       inputs: '',
                       outputs: '',
-                      licenseFee: '0_DAI',
+                      licenseFee: {
+                        amount: 2,
+                        currency: 'DAI',
+                      },
                       note: '',
                     },
                     timestamp: 1696457437,
@@ -330,6 +317,7 @@ export const example: Pokedex = {
                           deparetureTime: 1696453437,
                           duration: 21600,
                         },
+                        quantity: 80,
                         instance: {
                           category: 'food',
                           type: 'strawberry_lyophilised',
@@ -341,7 +329,6 @@ export const example: Pokedex = {
                           expiryDate: 1984317400,
                           format: 'powder',
                           bio: false,
-                          quantity: 8,
                           grade: 'A',
                           process: {
                             type: 'milling',
@@ -350,7 +337,10 @@ export const example: Pokedex = {
                               hash: 'cf880b9eeac5093fa27b0825906c600685',
                               inputs: '',
                               outputs: '',
-                              licenseFee: '0_DAI',
+                              licenseFee: {
+                                amount: 3,
+                                currency: 'DAI',
+                              },
                               note: {
                                 'Particle size (micron)': 7,
                               },
@@ -377,6 +367,7 @@ export const example: Pokedex = {
                                   deparetureTime: 1696400437,
                                   duration: 1036800,
                                 },
+                                quantity: 100,
                                 instance:
                                   'https://api.gateway.ethswarm.org/bzz/30f5c5a8ad6f41784e5d11bb33b08730bf71a3cd6bb5d75e391ed62172cad78d/',
                               },
@@ -388,6 +379,7 @@ export const example: Pokedex = {
                                   deparetureTime: 1696409437,
                                   duration: 1036800,
                                 },
+                                quantity: 300,
                                 instance: {
                                   category: 'food',
                                   type: 'Mango_lyophilised',
@@ -399,7 +391,6 @@ export const example: Pokedex = {
                                   expiryDate: 1759562637,
                                   format: 'slices',
                                   bio: false,
-                                  quantity: 2000,
                                   grade: 'A',
                                   size: '1.5 cm',
                                   process: {
@@ -410,7 +401,10 @@ export const example: Pokedex = {
                                       hash: 'cf880b9eeac5093fa27b0825906c600685',
                                       inputs: '',
                                       outputs: '',
-                                      licenseFee: '0_DAI',
+                                      licenseFee: {
+                                        amount: 4,
+                                        currency: 'DAI',
+                                      },
                                       note: 'Mango can be whole, or sliced/diced.',
                                     },
                                     timestamp: 1696389437,
@@ -434,6 +428,7 @@ export const example: Pokedex = {
                                           deparetureTime: 1696349437,
                                           duration: 3600,
                                         },
+                                        quantity: 2000,
                                         instance: {
                                           category: 'food',
                                           type: 'Mango',
@@ -445,7 +440,6 @@ export const example: Pokedex = {
                                           expiryDate: 1696512237,
                                           format: 'whole',
                                           bio: false,
-                                          quantity: 20000,
                                           grade: 'Ugly',
                                           size: '3 cm',
                                           process: {
@@ -468,6 +462,7 @@ export const example: Pokedex = {
                                                   type: 'Mango',
                                                   bio: true,
                                                 },
+                                                quantity: 20000,
                                               },
                                             ],
                                           },
@@ -526,6 +521,7 @@ export const example: Pokedex = {
                           duration: 1036800,
                         },
                         instance: 'apiTest.json',
+                        quantity: 150,
                       },
                     ],
                     machineInstance: {

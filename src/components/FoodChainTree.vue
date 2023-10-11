@@ -343,8 +343,12 @@ function inputInstancesToNodes(
   return inputInstances
     .map((inputInstance) =>
       'transport' in inputInstance
-        ? instanceToNodes(inputInstance.instance, inputInstance.transport)
-        : instanceToNodes(inputInstance.instance)
+        ? instanceToNodes(
+            inputInstance.instance,
+            inputInstance.quantity,
+            inputInstance.transport
+          )
+        : instanceToNodes(inputInstance.instance, inputInstance.quantity)
     )
     .flat();
 }
@@ -376,6 +380,7 @@ const transportIconMap: Map<TransportMethod, string> = new Map([
 
 function instanceToNodes(
   instance: UrlOr<ProductInstance>,
+  quantity: number,
   transport?: Transport
 ): QTreeNode[] {
   return instance === undefined
@@ -397,15 +402,16 @@ function instanceToNodes(
       ]
     : [
         ...(instance.category === 'food'
-          ? [foodInstanceToNode(instance, transport)]
+          ? [foodInstanceToNode(instance, quantity, transport)]
           : instance.category === 'cartridge'
-          ? [cartridgeInstanceToNode(instance, transport)]
+          ? [cartridgeInstanceToNode(instance, quantity, transport)]
           : []),
       ];
 }
 
 function foodInstanceToNode(
   food: FoodInstance,
+  quantity: number,
   transport?: Transport
 ): QTreeNode {
   return {
@@ -423,7 +429,7 @@ function foodInstanceToNode(
           ]
         : []),
       ...bioToNodes(food.bio),
-      ...quantityToNodes(food.quantity),
+      ...quantityToNodes(quantity),
       ...gradeToNodes(food.grade),
       ...sizeToNodes(food.size),
       ...fdcIdToNodes(food.iDs),
@@ -435,6 +441,7 @@ function foodInstanceToNode(
 
 function cartridgeInstanceToNode(
   cartridge: CartridgeInstance,
+  quantity: number,
   transport?: Transport
 ): QTreeNode {
   return {
@@ -443,7 +450,7 @@ function cartridgeInstanceToNode(
     children: [
       ...ownerIdToNodes(cartridge.ownerId),
       ...bioToNodes(cartridge.bio),
-      ...quantityToNodes(cartridge.quantity),
+      ...quantityToNodes(quantity),
       ...gradeToNodes(cartridge.grade),
       ...sizeToNodes(cartridge.size),
       ...(transport !== undefined ? [transportToNode(transport)] : []),
