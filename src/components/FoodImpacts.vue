@@ -2,7 +2,7 @@
   <div class="row justify-around">
     <div class="col-xs-0 col-sm-1" />
     <div class="column items-center col-3">
-      <div class="text-h3 q-pa-sm impact-value">
+      <div class="text-h3 q-pa-sm impact-value text-no-wrap">
         {{ getTotalImpact('carbon') }} g
       </div>
       <div class="text-center impact-label">
@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="column items-center col-3">
-      <div class="text-h3 q-pa-sm impact-value">
+      <div class="text-h3 q-pa-sm impact-value text-no-wrap">
         {{ getTotalImpact('water') }} l
       </div>
       <div class="text-center impact-label">WATER FOOTPRINT<br />(avoided)</div>
