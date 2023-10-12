@@ -88,7 +88,8 @@ function getEnabledAmount(food: FoodNutrients): number {
               foodNutrient.nutrient?.id === props.nutrient.id
           )?.amount) ||
           0
-      : 0
+      : 0,
+    props.scale
   );
 }
 
@@ -103,7 +104,8 @@ const totalAmounts = computed(() =>
             )?.amount) ||
           0
       )
-      .reduce((prev, cur) => prev + cur, 0)
+      .reduce((prev, cur) => prev + cur, 0),
+    props.scale
   )
 );
 
@@ -150,18 +152,18 @@ const chartOptions = computed(
   })
 );
 
-function mapAmount(amount: number): number {
-  switch (props.scale) {
+function mapAmount(amount: number, scale: ChartScale): number {
+  switch (scale) {
     case 'total':
-      return amount;
+      return amount * props.totalWeight;
     case 'normalized':
-      return (amount / props.totalWeight) * 100;
+      return amount;
     case 'rdi_child':
-      return (amount / props.rdi.child) * 100;
+      return (mapAmount(amount, 'total') / props.rdi.child) * 100;
     case 'rdi_female':
-      return (amount / props.rdi.female) * 100;
+      return (mapAmount(amount, 'total') / props.rdi.female) * 100;
     case 'rdi_male':
-      return (amount / props.rdi.male) * 100;
+      return (mapAmount(amount, 'total') / props.rdi.male) * 100;
   }
 }
 

@@ -70,6 +70,7 @@ export interface Price {
 
 export interface GenericInputInstance {
   instance: UrlOr<ProductInstance>;
+  /* x 100 (g|ml) */
   quantity: number;
 }
 export type LocalInputInstance = GenericInputInstance;
@@ -150,6 +151,7 @@ export interface KnowHow {
 export interface GenericImpact {
   ownerId: string;
   format: string;
+  /* x (g|l) */
   quantity: number;
 }
 
@@ -198,7 +200,7 @@ export const example: Pokedex = {
           deparetureTime: 1696475437,
           duration: 1036800,
         },
-        quantity: 400,
+        quantity: 4,
         instance: {
           category: 'food',
           type: 'strawberry_kiwi_cake',
@@ -274,7 +276,7 @@ export const example: Pokedex = {
                   deparetureTime: 1696460437,
                   duration: 21600,
                 },
-                quantity: 600,
+                quantity: 6,
                 instance: {
                   category: 'food',
                   type: 'strawberry_kiwi_powder_blend',

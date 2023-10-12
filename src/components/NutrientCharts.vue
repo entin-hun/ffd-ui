@@ -94,7 +94,7 @@ export type ChartScale =
 const chartScaleOptions = computed((): QSelectOption<ChartScale>[] => [
   {
     value: 'total',
-    label: `Total (${props.data.inputInstances[0].quantity} g)`,
+    label: `Total (${props.data.inputInstances[0].quantity * 100} g)`,
   },
   { value: 'normalized', label: 'Per 100 g' },
   { value: 'rdi_child', label: '% RDI (child)' },
