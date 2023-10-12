@@ -1,4 +1,15 @@
 <template>
+  <q-banner
+    rounded
+    class="bg-warning text-black q-my-md"
+    v-if="props.args === undefined"
+  >
+    <template v-slot:avatar>
+      <q-avatar icon="warning" class="bg-primary text-white" square rounded />
+    </template>
+    URL arguments missing; running in demo mode
+  </q-banner>
+
   <div class="column justify-center" v-if="data !== undefined">
     <q-banner
       rounded
@@ -22,41 +33,47 @@
     <ProcessMap :data="data" @show-process="showProcess" />
     <FoodChainTree :data="data" ref="tree" />
   </div>
-  <!-- <div
-    v-else-if="request.isFetching && !request.isFinished"
-    class="column justify-center text-center"
-  >
-    <p>Fetching data from Etherneum Swarm...</p>
-    <div><q-spinner size="xl" /></div>
+  <div v-if="request !== undefined">
+    <div
+      v-if="request.isFetching.value"
+      class="column justify-center text-center"
+    >
+      <p>Fetching data from Etherneum Swarm...</p>
+      <div><q-spinner size="xl" /></div>
+    </div>
+    <div v-else-if="request.error.value != null" class="column text-center">
+      <p>Error fetching data from Etherneum Swarm: {{ request.error }}</p>
+    </div>
+    <div v-else />
   </div>
-  <div v-else-if="request.error" class="column text-center">
-    <p>Error fetching data from Etherneum Swarm: {{ request.error }}</p>
-  </div> -->
 </template>
 
 <script setup lang="ts">
 import NutrientCharts from 'components/NutrientCharts.vue';
 import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
-
 import { Ref, computed, onMounted, ref } from 'vue';
-// import { useFetch } from '@vueuse/core';
+import { useFetch } from '@vueuse/core';
 import {
-  FetchError,
   FoodInstance,
+  Pokedex,
   Process,
-  // FetchError,
-  // Pokedex,
   ProductInstance,
   SaleProcess,
   example,
 } from '../models';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
+import { api } from 'boot/axios';
+// import typia from 'typia';
 
-defineProps<{
+export interface Args {
   auth: string;
   contract: string;
   token: string;
+}
+
+const props = defineProps<{
+  args?: Args;
 }>();
 
 const data: Ref<SaleProcess | undefined> = ref(undefined);
@@ -66,7 +83,7 @@ function resolveUrls(process: Process): Promise<void> {
   return Promise.all(
     process.inputInstances.map(async (inputInstance) =>
       (typeof inputInstance.instance === 'string'
-        ? axios
+        ? api
             .get<ProductInstance>(inputInstance.instance)
             .then((result) => Promise.resolve(result.data))
             .catch((error: AxiosError) =>
@@ -90,9 +107,18 @@ function resolveUrls(process: Process): Promise<void> {
   );
 }
 
-onMounted(() =>
-  resolveUrls(example.sale).then(() => (data.value = example.sale))
-);
+onMounted(() => {
+  if (request === undefined)
+    resolveUrls(example.sale).then(() => (data.value = example.sale));
+  else
+    request.then((result) => {
+      console.log(result.data.value);
+      if (result.data.value !== null) {
+        resolveUrls(result.data.value.sale);
+        data.value = result.data.value.sale;
+      }
+    });
+});
 
 function showProcess(processId: number) {
   tree.value?.openProcess(processId);
@@ -150,15 +176,29 @@ function checkNutrients(instance: FoodInstance): string[] {
   return inputErrors;
 }
 
-// const url = `https://nft.api.infura.io/networks/137/nfts/${props.contract}/tokens/${props.token}`;
+// const assertPokedex = typia.createAssert<Pokedex>();
 
-// const request = useFetch<FoodData>(url, {
-//   beforeFetch(ctx) {
-//     ctx.options.headers = {
-//       ...ctx.options.headers,
-//       Accept: 'application/json',
-//       Authorization: props.auth,
-//     };
-//   },
-// }).get();
+const request =
+  props.args !== undefined
+    ? useFetch(
+        `https://nft.api.infura.io/networks/137/nfts/${props.args.contract}/tokens/${props.args.token}`,
+        {
+          beforeFetch(ctx) {
+            ctx.options.headers = {
+              ...ctx.options.headers,
+              Accept: 'application/json',
+              ...(props.args !== undefined
+                ? { Authorization: props.args.auth }
+                : {}),
+            };
+          },
+          // afterFetch(ctx) {
+          //   assertPokedex(ctx);
+          //   return ctx;
+          // },
+        }
+      )
+        .get()
+        .json<Pokedex>()
+    : undefined;
 </script>

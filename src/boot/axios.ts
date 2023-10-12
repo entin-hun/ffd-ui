@@ -14,7 +14,7 @@ declare module '@vue/runtime-core' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: 'https://api.example.com' });
+const api = axios.create({ baseURL: '' });
 
 let outstanding = 0;
 let complete = 0;
@@ -33,7 +33,7 @@ function requestFinished<T>(result: T): T {
   return result;
 }
 
-axios.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     outstanding++;
     if (outstanding === 1) {
@@ -45,7 +45,7 @@ axios.interceptors.request.use(
   (error) => Promise.reject(requestFinished(Promise.reject(error)))
 );
 
-axios.interceptors.response.use(requestFinished, (error) =>
+api.interceptors.response.use(requestFinished, (error) =>
   Promise.reject(requestFinished(error))
 );
 
