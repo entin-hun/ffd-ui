@@ -97,7 +97,7 @@ export interface FoodInstance {
   category: 'food';
   type: string;
   iDs?: IDs;
-  nutrients?: FallbackFoodNutrients[];
+  nutrients?: FallbackFoodNutrient[];
   ownerId?: string;
   expiryDate?: number;
   format?: string;
@@ -115,7 +115,7 @@ export interface CartridgeInstance {
   size: string;
 }
 
-export interface FallbackFoodNutrients {
+export interface FallbackFoodNutrient {
   amount: number;
   iDs: IDs;
 }
@@ -305,7 +305,6 @@ export const example: Pokedex = {
                       type: 'Point',
                       coordinates: [-2.567003, 51.412577],
                     },
-
                     temperatureRange: {
                       min: -45,
                       max: 22,

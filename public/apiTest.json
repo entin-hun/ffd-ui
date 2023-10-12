@@ -1,10 +1,12 @@
 {
   "category": "food",
   "type": "kiwi_lyophilised",
-  "iDs": {
-    "registry": "FDC",
-    "id": 2344937
-  },
+  "nutrients": [
+    {
+      "amount": 10,
+      "iDs": { "registry": "FDC", "id": 1079 }
+    }
+  ],
   "ownerSDomain": "essencefood.tech",
   "expiryDate": 1984317400,
   "format": "powder",

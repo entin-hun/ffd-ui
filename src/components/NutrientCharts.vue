@@ -66,7 +66,13 @@
 
 <script setup lang="ts">
 import { Ref, computed, onMounted, ref } from 'vue';
-import { Process, FoodInstance, SaleProcess, FetchError } from '../models';
+import {
+  Process,
+  FoodInstance,
+  SaleProcess,
+  FetchError,
+  FallbackFoodNutrient,
+} from '../models';
 import FoodDataBanner from './FoodDataBanner.vue';
 import FoodInstanceSelector from './FoodInstanceSelector.vue';
 import {
@@ -104,7 +110,7 @@ const chartScaleOptions = computed((): QSelectOption<ChartScale>[] => [
 
 const chartScale: Ref<ChartScale> = ref('total');
 
-interface ResolvedFallbackNutrient {
+interface ResolvedFallbackFoodNutrient {
   amount: number;
   nutrient: Nutrient;
 }
@@ -112,7 +118,7 @@ interface ResolvedFallbackNutrient {
 export interface FoodNutrients {
   instance: FoodInstance;
   color: string;
-  nutrients: (FoodNutrient | ResolvedFallbackNutrient)[] | FetchError;
+  nutrients: (FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError;
 }
 
 const foodNutrients: Ref<FoodNutrients[]> = ref([]);
@@ -151,51 +157,18 @@ async function findInstanceNutrients(
 ): Promise<FoodNutrients[]> {
   return Promise.all(
     process.inputInstances.map(async ({ instance }) =>
-      typeof instance === 'object' && 'category' in instance
-        ? 'iDs' in instance && instance.iDs !== undefined
+      typeof instance === 'object' &&
+      'category' in instance &&
+      'type' in instance
+        ? instance.iDs !== undefined || instance.nutrients !== undefined
           ? [
               {
                 instance: instance,
                 color: chartColors[chartColorCounter++ % chartColors.length],
-                nutrients:
-                  instance.iDs !== undefined
-                    ? await fdcApi
-                        .getFood(
-                          instance.iDs.id.toFixed(),
-                          undefined,
-                          Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
-                        )
-                        .then((response) =>
-                          typeof response.data === 'object' &&
-                          'foodNutrients' in response.data &&
-                          response.data.foodNutrients !== undefined
-                            ? Promise.resolve(
-                                response.data.foodNutrients.filter(
-                                  (item): item is FoodNutrient =>
-                                    'nutrient' in item &&
-                                    item.nutrient !== undefined &&
-                                    item.nutrient?.id != undefined &&
-                                    nutrientsOfInterest.has(item.nutrient.id)
-                                )
-                              )
-                            : Promise.reject()
-                        )
-                        .catch((error) =>
-                          Promise.resolve({
-                            errorMessage: error.message,
-                          })
-                        )
-                    : // : instance.nutrients !== undefined
-                      // ?
-                      //   instance.nutrients.map<ResolvedFallbackNutrient>((nutrient) => ({
-                      //     amount: nutrient.amount,
-                      //     nutrient: fdcApi.get
-                      //   }))
-
-                      [],
+                nutrients: await resolveNutrients(instance),
               },
             ]
-          : 'process' in instance && instance.process !== undefined
+          : instance.process !== undefined
           ? findInstanceNutrients(instance.process)
           : []
         : []
@@ -246,5 +219,84 @@ onMounted(() =>
 
 function foodsChanged(components: FoodNutrients[]) {
   enabledFoodNutrients.value = components;
+}
+
+async function resolveNutrients(
+  instance: FoodInstance
+): Promise<(FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError> {
+  return await (instance.iDs !== undefined
+    ? resolveFdc(instance.iDs.id)
+    : instance.nutrients !== undefined
+    ? Promise.all(
+        instance.nutrients.map(async (nutrient) =>
+          resolveFallbackNutrient(nutrient)
+        )
+      )
+    : Promise.reject(new Error('missing nutrient information')).catch((error) =>
+        Promise.resolve({
+          errorMessage: error.message,
+        } as FetchError)
+      ));
+}
+
+function resolveFdc(id: number): Promise<FoodNutrient[]> {
+  return fdcApi
+    .getFood(
+      id.toFixed(),
+      undefined,
+      Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
+    )
+    .then((response) =>
+      typeof response.data === 'object' &&
+      'foodNutrients' in response.data &&
+      response.data.foodNutrients !== undefined
+        ? Promise.resolve(
+            response.data.foodNutrients.filter(
+              (item): item is FoodNutrient =>
+                'nutrient' in item &&
+                item.nutrient !== undefined &&
+                item.nutrient?.id != undefined &&
+                nutrientsOfInterest.has(item.nutrient.id)
+            )
+          )
+        : Promise.reject(new Error('Unrecognized response'))
+    );
+}
+
+const fallbackResolver = fdcApi
+  .getFood('2344739')
+  .then((response) =>
+    typeof response.data === 'object' &&
+    'foodNutrients' in response.data &&
+    response.data.foodNutrients !== undefined
+      ? Promise.resolve(
+          response.data.foodNutrients.filter(
+            (item): item is FoodNutrient =>
+              'nutrient' in item &&
+              item.nutrient !== undefined &&
+              item.nutrient?.id != undefined &&
+              nutrientsOfInterest.has(item.nutrient.id)
+          )
+        )
+      : Promise.reject(new Error('Unrecognized response'))
+  );
+
+async function resolveFallbackNutrient(
+  nutrient: FallbackFoodNutrient
+): Promise<ResolvedFallbackFoodNutrient> {
+  return fallbackResolver
+    .then(
+      (response) =>
+        response.find(
+          (fdcFoodNutrient) => fdcFoodNutrient.nutrient?.id === nutrient.iDs.id
+        )?.nutrient
+    )
+    .then(
+      (fdcNutrient) =>
+        ({
+          amount: nutrient.amount,
+          nutrient: fdcNutrient,
+        } as ResolvedFallbackFoodNutrient)
+    );
 }
 </script>
