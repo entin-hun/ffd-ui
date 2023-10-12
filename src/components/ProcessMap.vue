@@ -97,9 +97,7 @@ function findProcesses(process: Process): Process[] {
   ];
 }
 
-function mapLoaded({ target }: any) {
-  const map = target as MapboxGl.Map;
-
+function mapLoaded({ target }: { target: MapboxGl.Map }) {
   // technique based on https://jsfiddle.net/2mws8y3q/
   // an array of valid line-dasharray values, specifying the lengths of the alternating dashes and gaps that form the dash pattern
   const dashArraySequence = [
@@ -127,7 +125,7 @@ function mapLoaded({ target }: any) {
     const newStep = Math.floor((timestamp / 50) % dashArraySequence.length);
     if (newStep !== step) {
       transports.value.forEach((transport) => {
-        map.setPaintProperty(
+        target.setPaintProperty(
           transport.id,
           'line-dasharray',
           dashArraySequence[step]
