@@ -36,7 +36,7 @@ import {
   Impact,
   KnowHow,
   SaleProcess,
-} from '../models';
+} from '@fairfooddata/types';
 import { DateTime, Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
 import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';

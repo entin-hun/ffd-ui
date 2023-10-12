@@ -20,7 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import { FoodInstance, Process, SaleProcess } from 'src/models';
+import { FoodInstance, Process, SaleProcess } from '@fairfooddata/types';
+
 import { computed } from 'vue';
 
 const props = defineProps<{

@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { FoodInstance, Impact } from 'src/models';
+import { FoodInstance, Impact } from '@fairfooddata/types';
 import { FoodNutrients } from './NutrientCharts.vue';
 
 const props = defineProps<{
@@ -77,3 +77,4 @@ function getImpacts(instance: FoodInstance, category: string): Impact[] {
   font-weight: bold;
 }
 </style>
+src/example

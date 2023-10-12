@@ -72,7 +72,7 @@ import {
   SaleProcess,
   FetchError,
   FallbackFoodNutrient,
-} from '../models';
+} from '@fairfooddata/types';
 import FoodDataBanner from './FoodDataBanner.vue';
 import FoodInstanceSelector from './FoodInstanceSelector.vue';
 import {
@@ -300,3 +300,4 @@ async function resolveFallbackNutrient(
     );
 }
 </script>
+../example

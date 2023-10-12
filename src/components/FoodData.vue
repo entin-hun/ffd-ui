@@ -44,8 +44,9 @@ import {
   Process,
   ProductInstance,
   SaleProcess,
-  example,
-} from '../models';
+} from '@fairfooddata/types';
+import { example } from '../example';
+
 import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
 // import typia from 'typia';
@@ -134,3 +135,4 @@ const request =
         .json<Pokedex>()
     : undefined;
 </script>
+../example

@@ -1,4 +1,4 @@
-import { Process, TransportMethod } from 'src/models';
+import { Process, TransportMethod } from '@fairfooddata/types';
 
 export const chartColors = [
   'chart-1',
