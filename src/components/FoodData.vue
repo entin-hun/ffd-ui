@@ -11,28 +11,12 @@
   </q-banner>
 
   <div class="column justify-center" v-if="data !== undefined">
-    <q-banner
-      rounded
-      class="bg-warning text-black q-my-md"
-      v-if="dataErrors.length > 0"
-    >
-      <template v-slot:avatar>
-        <q-avatar icon="warning" class="bg-primary text-white" square rounded />
-      </template>
-      <template v-slot:default
-        ><div>
-          Some data sources were unavailable or invalid. Data below are based on
-          partial information:
-          <ul>
-            <li v-for="error in dataErrors" :key="error">{{ error }}</li>
-          </ul>
-        </div></template
-      >
-    </q-banner>
+    <DataValidator :data="data" />
     <NutrientCharts :data="data" />
     <ProcessMap :data="data" @show-process="showProcess" />
     <FoodChainTree :data="data" ref="tree" />
   </div>
+
   <div v-if="request !== undefined">
     <div
       v-if="request.isFetching.value"
@@ -49,13 +33,13 @@
 </template>
 
 <script setup lang="ts">
+import DataValidator from './DataValidator.vue';
 import NutrientCharts from 'components/NutrientCharts.vue';
 import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
-import { Ref, computed, onMounted, ref } from 'vue';
+import { Ref, onMounted, ref } from 'vue';
 import { useFetch } from '@vueuse/core';
 import {
-  FoodInstance,
   Pokedex,
   Process,
   ProductInstance,
@@ -122,58 +106,6 @@ onMounted(() => {
 
 function showProcess(processId: number) {
   tree.value?.openProcess(processId);
-}
-
-const dataErrors = computed(() => [
-  ...checkUnresolvedUrls(data.value),
-  ...(data.value === undefined
-    ? []
-    : data.value.inputInstances
-        .map((instance) =>
-          typeof instance.instance === 'object' && 'type' in instance.instance
-            ? checkNutrients(instance.instance)
-            : []
-        )
-        .flat()),
-]);
-
-function checkUnresolvedUrls(process?: Process): string[] {
-  return process === undefined
-    ? []
-    : process.inputInstances
-        .map((inputInstance) =>
-          typeof inputInstance.instance === 'object'
-            ? 'errorMessage' in inputInstance.instance
-              ? [
-                  `${process.type} has unresolvable input instance (${inputInstance.instance.errorMessage})`,
-                ]
-              : 'process' in inputInstance.instance
-              ? checkUnresolvedUrls(inputInstance.instance.process)
-              : []
-            : []
-        )
-        .flat();
-}
-
-function checkNutrients(instance: FoodInstance): string[] {
-  if (instance.nutrients !== undefined || instance.iDs !== undefined) return [];
-
-  if (instance.process === undefined)
-    return [`${instance.type} is missing nutrient information`];
-
-  const inputErrors =
-    instance.process === undefined
-      ? []
-      : instance.process.inputInstances
-          .map((inputInstance) =>
-            typeof inputInstance.instance === 'object' &&
-            'type' in inputInstance.instance
-              ? checkNutrients(inputInstance.instance)
-              : []
-          )
-          .flat();
-
-  return inputErrors;
 }
 
 // const assertPokedex = typia.createAssert<Pokedex>();
