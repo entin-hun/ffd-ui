@@ -1,15 +1,4 @@
 <template>
-  <q-banner
-    rounded
-    class="bg-warning text-black q-my-md"
-    v-if="props.args === undefined"
-  >
-    <template v-slot:avatar>
-      <q-avatar icon="warning" class="bg-primary text-white" square rounded />
-    </template>
-    URL arguments missing; running in demo mode
-  </q-banner>
-
   <div class="column justify-center" v-if="data !== undefined">
     <DataValidator :data="data" />
     <NutrientCharts :data="data" />
@@ -34,6 +23,7 @@
 
 <script setup lang="ts">
 import DataValidator from './DataValidator.vue';
+import { useQuasar } from 'quasar';
 import NutrientCharts from 'components/NutrientCharts.vue';
 import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
@@ -57,9 +47,21 @@ export interface Args {
   token: string;
 }
 
+const $q = useQuasar();
+
 const props = defineProps<{
   args?: Args;
 }>();
+
+if (props.args === undefined)
+  $q.notify({
+    message: 'Demo mode',
+    caption: 'URL parameters missing',
+    timeout: 10000000,
+    position: 'top-right',
+    type: 'warning',
+    closeBtn: true,
+  });
 
 const data: Ref<SaleProcess | undefined> = ref(undefined);
 const tree = ref<InstanceType<typeof FoodChainTree>>();
