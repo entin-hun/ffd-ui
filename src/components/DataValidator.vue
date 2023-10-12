@@ -38,6 +38,7 @@ const dataErrors = computed(() => [
             : []
         )
         .flat()),
+  ...checkTransports(props.data),
 ]);
 
 function checkUnresolvedUrls(process?: Process): string[] {
@@ -77,5 +78,12 @@ function checkNutrients(instance: FoodInstance): string[] {
           .flat();
 
   return inputErrors;
+}
+
+function checkTransports(process: Process): string[] {
+  /* TODO check if every inputInstance is either geographically
+   * local or has transport
+   */
+  return [];
 }
 </script>
