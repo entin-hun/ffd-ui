@@ -27,7 +27,6 @@ import {
   IDs,
   CartridgeInstance,
   Transport,
-  TransportMethod,
   LocalInputInstance,
   TemperatureRange,
   TransportedInputInstance,
@@ -40,7 +39,7 @@ import {
 } from '../models';
 import { DateTime, Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
-import { getProcessIcon, getProcessLabel } from './utils';
+import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';
 import FoodDataBanner from './FoodDataBanner.vue';
 
 let keyCounter = 0;
@@ -356,7 +355,7 @@ function inputInstancesToNodes(
 function transportToNode(transport: Transport): QTreeNode {
   return {
     label: `Shipping: ${transport.method}`,
-    icon: transportIconMap.get(transport.method),
+    icon: getTransportLabel(transport.method).icon,
     children: [
       timestampToNode(transport.deparetureTime),
       ...durationToNodes(transport.duration),
@@ -371,12 +370,6 @@ function transportToNode(transport: Transport): QTreeNode {
     ],
   };
 }
-
-const transportIconMap: Map<TransportMethod, string> = new Map([
-  ['air', 'flight'],
-  ['land', 'local_shipping'],
-  ['sea', 'directions_boat'],
-]);
 
 function instanceToNodes(
   instance: UrlOr<ProductInstance>,

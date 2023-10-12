@@ -1,4 +1,4 @@
-import { Process } from 'src/models';
+import { Process, TransportMethod } from 'src/models';
 
 export const chartColors = [
   'chart-1',
@@ -59,4 +59,24 @@ export function getProcessLabel(process: Process) {
   return 'type' in process
     ? processTypeLabels.get(process.type)?.text || 'Unknown process'
     : 'BUG: Process with no type';
+}
+
+export interface TransportMeta {
+  icon: string;
+  color: string;
+}
+
+const transportMeta: Map<TransportMethod, TransportMeta> = new Map([
+  ['air', { icon: 'flight', color: 'white' }],
+  ['land', { icon: 'local_shipping', color: 'brown' }],
+  ['sea', { icon: 'directions_boat', color: 'blue' }],
+]);
+
+export function getTransportLabel(method?: TransportMethod): TransportMeta {
+  return (
+    (method !== undefined ? transportMeta.get(method) : undefined) || {
+      icon: 'question_mark',
+      color: 'primary',
+    }
+  );
 }

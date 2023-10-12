@@ -63,9 +63,9 @@ import {
   MapboxMarker,
   MapboxLayer,
 } from '@studiometa/vue-mapbox-gl';
-import { Process, SaleProcess } from 'src/models';
+import { Process, SaleProcess, TransportMethod } from 'src/models';
 import { computed } from 'vue';
-import { getProcessIcon, getProcessLabel } from './utils';
+import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';
 import { DateTime } from 'luxon';
 import FoodDataBanner from './FoodDataBanner.vue';
 import GeoJSON from 'geojson';
@@ -145,6 +145,7 @@ interface InstanceTransport {
   from: GeoJSON.Position;
   to: GeoJSON.Position;
   cargo: string;
+  method: TransportMethod;
 }
 
 interface TransportLayer {
@@ -175,9 +176,11 @@ const transports = computed((): TransportLayer[] =>
         },
       },
       paint: {
-        'line-color': colors.getPaletteColor('secondary'),
+        'line-color': colors.getPaletteColor(
+          getTransportLabel(transport.method).color
+        ),
         'line-width': 6,
-        'line-opacity': 0.6,
+        'line-opacity': 0.8,
       },
     },
   }))
@@ -194,6 +197,10 @@ function getTransports(process: Process): InstanceTransport[] {
               from: inputInstance.instance.process.location.coordinates,
               to: process.location.coordinates,
               cargo: inputInstance.instance.type,
+              method:
+                'transport' in inputInstance
+                  ? inputInstance.transport.method
+                  : undefined,
             } as InstanceTransport,
             ...getTransports(inputInstance.instance.process),
           ]
