@@ -148,7 +148,7 @@ export const example: Pokedex = {
                           deparetureTime: 1696453437,
                           duration: 21600,
                         },
-                        quantity: 80,
+                        quantity: 2,
                         instance: {
                           category: 'food',
                           type: 'strawberry_lyophilised',
@@ -198,7 +198,7 @@ export const example: Pokedex = {
                                   deparetureTime: 1696400437,
                                   duration: 1036800,
                                 },
-                                quantity: 100,
+                                quantity: 3,
                                 instance:
                                   'https://api.gateway.ethswarm.org/bzz/30f5c5a8ad6f41784e5d11bb33b08730bf71a3cd6bb5d75e391ed62172cad78d/',
                               },
@@ -210,7 +210,7 @@ export const example: Pokedex = {
                                   deparetureTime: 1696409437,
                                   duration: 1036800,
                                 },
-                                quantity: 300,
+                                quantity: 2,
                                 instance: {
                                   category: 'food',
                                   type: 'Mango_lyophilised',
@@ -259,7 +259,7 @@ export const example: Pokedex = {
                                           deparetureTime: 1696349437,
                                           duration: 3600,
                                         },
-                                        quantity: 2000,
+                                        quantity: 20,
                                         instance: {
                                           category: 'food',
                                           type: 'Mango',
@@ -352,7 +352,7 @@ export const example: Pokedex = {
                           duration: 1036800,
                         },
                         instance: 'apiTest.json',
-                        quantity: 150,
+                        quantity: 1.5,
                       },
                     ],
                     machineInstance: {
@@ -369,33 +369,6 @@ export const example: Pokedex = {
                   },
                 },
               },
-              // {
-              //   type: 'transport',
-              //   startTime: 1684318200,
-              //   endTime: 1684317400,
-              //   startGeo: {
-              //     type: 'Feature',
-              //     geometry: {
-              //       type: 'Point',
-              //       coordinates: {
-              //         lat: 41.259187,
-              //         long: 1.777312,
-              //       },
-              //     },
-              //     properties: {},
-              //   },
-              //   endGeo: {
-              //     type: 'Feature',
-              //     geometry: {
-              //       type: 'Point',
-              //       coordinates: {
-              //         lat: 41.259187,
-              //         long: 1.777312,
-              //       },
-              //     },
-              //     properties: {},
-              //   },
-              // },
             ],
           },
         },
