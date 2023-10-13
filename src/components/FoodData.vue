@@ -137,4 +137,3 @@ const request =
         .json<Pokedex>()
     : undefined;
 </script>
-../example

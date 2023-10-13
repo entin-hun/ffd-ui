@@ -300,4 +300,3 @@ async function resolveFallbackNutrient(
     );
 }
 </script>
-../example

@@ -77,4 +77,3 @@ function getImpacts(instance: FoodInstance, category: string): Impact[] {
   font-weight: bold;
 }
 </style>
-src/example

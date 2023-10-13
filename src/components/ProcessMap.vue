@@ -216,4 +216,3 @@ function getTransports(process: Process): InstanceTransport[] {
     );
 }
 </script>
-src/example
