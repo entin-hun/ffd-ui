@@ -58,7 +58,7 @@ if (props.args === undefined)
     message: 'Demo mode',
     caption: 'URL parameters missing',
     timeout: 10000000,
-    position: 'top-right',
+    position: 'bottom-right',
     type: 'warning',
     closeBtn: true,
   });
