@@ -87,7 +87,9 @@ function getEnabledAmount(food: FoodNutrients): number {
               'nutrient' in foodNutrient &&
               foodNutrient.nutrient?.id === props.nutrient.id
           )?.amount) ||
-          0) * food.factor
+          0) *
+          food.factor *
+          food.quantity
       : 0,
     props.scale
   );
@@ -102,7 +104,9 @@ const totalAmounts = computed(() =>
             food.nutrients.find(
               (nutrient) => nutrient.nutrient?.id === props.nutrient.id
             )?.amount) ||
-            0) * food.factor
+            0) *
+          food.factor *
+          food.quantity
       )
       .reduce((prev, cur) => prev + cur, 0),
     props.scale

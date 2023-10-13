@@ -120,6 +120,7 @@ export interface FoodNutrients {
   color: string;
   nutrients: (FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError;
   factor: number;
+  quantity: number;
 }
 
 const foodNutrients: Ref<FoodNutrients[]> = ref([]);
@@ -158,7 +159,7 @@ async function findInstanceNutrients(
   factor: number
 ): Promise<FoodNutrients[]> {
   return Promise.all(
-    process.inputInstances.map(async ({ instance }) =>
+    process.inputInstances.map(async ({ instance, quantity }) =>
       typeof instance === 'object' &&
       'category' in instance &&
       'type' in instance
@@ -169,6 +170,7 @@ async function findInstanceNutrients(
                 color: chartColors[chartColorCounter++ % chartColors.length],
                 nutrients: await resolveNutrients(instance),
                 factor: factor,
+                quantity: quantity,
               },
             ]
           : instance.process !== undefined
