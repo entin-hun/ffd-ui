@@ -42,9 +42,10 @@ import { api } from 'boot/axios';
 // import typia from 'typia';
 
 export interface Args {
-  auth: string;
-  contract: string;
-  token: string;
+  clientSecret: string;
+  projectId: string;
+  collectionId: string;
+  id: string;
 }
 
 const $q = useQuasar();
@@ -101,8 +102,8 @@ onMounted(() => {
     request.then((result) => {
       console.log(result.data.value);
       if (result.data.value !== null) {
-        resolveUrls(result.data.value.sale);
-        data.value = result.data.value.sale;
+        resolveUrls(result.data.value.metadata.sale);
+        data.value = result.data.value.metadata.sale;
       }
     });
 });
@@ -116,14 +117,17 @@ function showProcess(processId: number) {
 const request =
   props.args !== undefined
     ? useFetch(
-        `https://nft.api.infura.io/networks/137/nfts/${props.args.contract}/tokens/${props.args.token}`,
+        `https://www.crossmint.com/api/2022-06-09/collections/${props.args.collectionId}/nfts/${props.args.id}`,
         {
           beforeFetch(ctx) {
             ctx.options.headers = {
               ...ctx.options.headers,
               Accept: 'application/json',
               ...(props.args !== undefined
-                ? { Authorization: props.args.auth }
+                ? {
+                    'x-project-id': props.args.projectId,
+                    'x-client-secret': props.args.clientSecret,
+                  }
                 : {}),
             };
           },
@@ -134,6 +138,6 @@ const request =
         }
       )
         .get()
-        .json<Pokedex>()
+        .json<{ metadata: Pokedex }>()
     : undefined;
 </script>

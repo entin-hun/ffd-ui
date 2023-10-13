@@ -21,13 +21,20 @@ import { computed } from 'vue';
 
 const args = computed((): Args | undefined => {
   const args = qs.parse(qs.extract(window.location.href));
-  return 'a' in args &&
-    'c' in args &&
-    't' in args &&
-    typeof args.a === 'string' &&
-    typeof args.c === 'string' &&
-    typeof args.t === 'string'
-    ? { auth: args.a, contract: args.c, token: args.t }
+  return 'collection' in args &&
+    'project' in args &&
+    'id' in args &&
+    'secret' in args &&
+    typeof args.collection === 'string' &&
+    typeof args.project === 'string' &&
+    typeof args.id === 'string' &&
+    typeof args.secret === 'string'
+    ? {
+        collectionId: args.collection,
+        projectId: args.project,
+        id: args.id,
+        clientSecret: args.secret,
+      }
     : undefined;
 });
 </script>
