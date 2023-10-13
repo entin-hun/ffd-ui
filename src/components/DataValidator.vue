@@ -76,8 +76,8 @@ const $q = useQuasar();
 
 if (dataErrors.value.length > 0)
   $q.notify({
-    message:
-      'Some data sources were unavailable or invalid. Data on this page are based on partial information.',
+    message: 'Some data sources were unavailable or invalid',
+    caption: 'Data on this page are based on partial information',
     timeout: 10000000,
     position: 'bottom-right',
     type: 'warning',
