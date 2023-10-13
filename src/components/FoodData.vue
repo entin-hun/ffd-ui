@@ -100,10 +100,10 @@ onMounted(() => {
     resolveUrls(example.sale).then(() => (data.value = example.sale));
   else
     request.then((result) => {
-      console.log(result.data.value);
       if (result.data.value !== null) {
-        resolveUrls(result.data.value.metadata.sale);
-        data.value = result.data.value.metadata.sale;
+        resolveUrls(result.data.value.metadata.sale).then(
+          () => (data.value = result.data.value?.metadata.sale)
+        );
       }
     });
 });
