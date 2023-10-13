@@ -119,6 +119,7 @@ export interface FoodNutrients {
   instance: FoodInstance;
   color: string;
   nutrients: (FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError;
+  factor: number;
 }
 
 const foodNutrients: Ref<FoodNutrients[]> = ref([]);
@@ -153,7 +154,8 @@ const nutrientsOfInterest: Map<number, NutrientRdi> = new Map([
 let chartColorCounter = 0;
 
 async function findInstanceNutrients(
-  process: Process
+  process: Process,
+  factor: number
 ): Promise<FoodNutrients[]> {
   return Promise.all(
     process.inputInstances.map(async ({ instance }) =>
@@ -166,10 +168,18 @@ async function findInstanceNutrients(
                 instance: instance,
                 color: chartColors[chartColorCounter++ % chartColors.length],
                 nutrients: await resolveNutrients(instance),
+                factor: factor,
               },
             ]
           : instance.process !== undefined
-          ? findInstanceNutrients(instance.process)
+          ? findInstanceNutrients(
+              instance.process,
+              factor *
+                (instance.process?.type === 'freezedrying' &&
+                instance.process.temperatureRange.max < 60
+                  ? 0.1
+                  : 1)
+            )
           : []
         : []
     )
@@ -211,7 +221,7 @@ const allNutrients = computed(() => {
 const enabledFoodNutrients = ref(Array<FoodNutrients>());
 
 onMounted(() =>
-  findInstanceNutrients(props.data).then((result) => {
+  findInstanceNutrients(props.data, 1).then((result) => {
     foodNutrients.value = result;
     enabledFoodNutrients.value = foodNutrients.value;
   })

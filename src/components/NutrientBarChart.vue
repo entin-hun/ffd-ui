@@ -81,13 +81,13 @@ const enabledAmounts = computed(() =>
 function getEnabledAmount(food: FoodNutrients): number {
   return mapAmount(
     props.enabledFoods.includes(food)
-      ? (food.nutrients.constructor === Array &&
+      ? ((food.nutrients.constructor === Array &&
           food.nutrients.find(
             (foodNutrient) =>
               'nutrient' in foodNutrient &&
               foodNutrient.nutrient?.id === props.nutrient.id
           )?.amount) ||
-          0
+          0) * food.factor
       : 0,
     props.scale
   );
@@ -98,11 +98,11 @@ const totalAmounts = computed(() =>
     props.allFoods
       .map(
         (food) =>
-          (food.nutrients.constructor === Array &&
+          ((food.nutrients.constructor === Array &&
             food.nutrients.find(
               (nutrient) => nutrient.nutrient?.id === props.nutrient.id
             )?.amount) ||
-          0
+            0) * food.factor
       )
       .reduce((prev, cur) => prev + cur, 0),
     props.scale
