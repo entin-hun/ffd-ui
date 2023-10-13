@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { FoodInstance, Process, SaleProcess } from '@fairfooddata/types';
+import type { FoodInstance, Process, SaleProcess } from '@fairfooddata/types';
 import { useQuasar } from 'quasar';
 
 import { computed } from 'vue';

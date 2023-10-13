@@ -63,7 +63,11 @@ import {
   MapboxMarker,
   MapboxLayer,
 } from '@studiometa/vue-mapbox-gl';
-import { Process, SaleProcess, TransportMethod } from '@fairfooddata/types';
+import type {
+  Process,
+  SaleProcess,
+  TransportMethod,
+} from '@fairfooddata/types';
 import { computed } from 'vue';
 import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';
 import { DateTime } from 'luxon';

@@ -66,7 +66,7 @@
 
 <script setup lang="ts">
 import { Ref, computed, onMounted, ref } from 'vue';
-import {
+import type {
   Process,
   FoodInstance,
   SaleProcess,

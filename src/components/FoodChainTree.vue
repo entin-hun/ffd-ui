@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { QTree, QTreeNode } from 'quasar';
-import {
+import type {
   Process,
   ProductInstance,
   FoodInstance,

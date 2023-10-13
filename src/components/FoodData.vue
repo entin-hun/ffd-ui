@@ -29,7 +29,7 @@ import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
 import { Ref, onMounted, ref } from 'vue';
 import { useFetch } from '@vueuse/core';
-import {
+import type {
   Pokedex,
   Process,
   ProductInstance,

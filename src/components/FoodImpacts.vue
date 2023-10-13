@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { FoodInstance, Impact } from '@fairfooddata/types';
+import type { FoodInstance, Impact } from '@fairfooddata/types';
 import { FoodNutrients } from './NutrientCharts.vue';
 
 const props = defineProps<{
