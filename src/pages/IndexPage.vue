@@ -21,19 +21,20 @@ import { computed } from 'vue';
 
 const args = computed((): Args | undefined => {
   const args = qs.parse(qs.extract(window.location.href));
-  return 'collection' in args &&
-    'project' in args &&
-    'id' in args &&
-    'secret' in args &&
-    typeof args.collection === 'string' &&
-    typeof args.project === 'string' &&
-    typeof args.id === 'string' &&
-    typeof args.secret === 'string'
+
+  if (!('n' in args) || args.n === null || typeof args.n !== 'string')
+    return undefined;
+  const [project, collection, id, secret] = args.n.split('|');
+
+  return project !== undefined &&
+    collection !== undefined &&
+    id !== undefined &&
+    secret !== undefined
     ? {
-        collectionId: args.collection,
-        projectId: args.project,
-        id: args.id,
-        clientSecret: args.secret,
+        projectId: project,
+        collectionId: collection,
+        id: id,
+        clientSecret: `sk_live.${secret}`,
       }
     : undefined;
 });
