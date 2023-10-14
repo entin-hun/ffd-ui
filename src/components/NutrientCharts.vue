@@ -236,43 +236,46 @@ function foodsChanged(components: FoodNutrients[]) {
 async function resolveNutrients(
   instance: FoodInstance
 ): Promise<(FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError> {
-  return await (instance.iDs !== undefined
-    ? resolveFdc(instance.iDs.id)
-    : instance.nutrients !== undefined
-    ? Promise.all(
-        instance.nutrients.map(async (nutrient) =>
-          resolveFallbackNutrient(nutrient)
+  return await resolveFdc(instance.iDs?.id).catch(async () =>
+    instance.nutrients !== undefined
+      ? await Promise.all(
+          instance.nutrients.map(async (nutrient) =>
+            resolveFallbackNutrient(nutrient)
+          )
         )
-      )
-    : Promise.reject(new Error('missing nutrient information')).catch((error) =>
-        Promise.resolve({
-          errorMessage: error.message,
-        } as FetchError)
-      ));
+      : Promise.reject(new Error('missing nutrient information')).catch(
+          (error) =>
+            Promise.resolve({
+              errorMessage: error.message,
+            } as FetchError)
+        )
+  );
 }
 
-function resolveFdc(id: number): Promise<FoodNutrient[]> {
-  return fdcApi
-    .getFood(
-      id.toFixed(),
-      undefined,
-      Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
-    )
-    .then((response) =>
-      typeof response.data === 'object' &&
-      'foodNutrients' in response.data &&
-      response.data.foodNutrients !== undefined
-        ? Promise.resolve(
-            response.data.foodNutrients.filter(
-              (item): item is FoodNutrient =>
-                'nutrient' in item &&
-                item.nutrient !== undefined &&
-                item.nutrient?.id != undefined &&
-                nutrientsOfInterest.has(item.nutrient.id)
-            )
-          )
-        : Promise.reject(new Error('Unrecognized response'))
-    );
+function resolveFdc(id?: number): Promise<FoodNutrient[]> {
+  return id === undefined
+    ? Promise.reject()
+    : fdcApi
+        .getFood(
+          id.toFixed(),
+          undefined,
+          Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
+        )
+        .then((response) =>
+          typeof response.data === 'object' &&
+          'foodNutrients' in response.data &&
+          response.data.foodNutrients !== undefined
+            ? Promise.resolve(
+                response.data.foodNutrients.filter(
+                  (item): item is FoodNutrient =>
+                    'nutrient' in item &&
+                    item.nutrient !== undefined &&
+                    item.nutrient?.id != undefined &&
+                    nutrientsOfInterest.has(item.nutrient.id)
+                )
+              )
+            : Promise.reject(new Error('Unrecognized response'))
+        );
 }
 
 const fallbackResolver = fdcApi
