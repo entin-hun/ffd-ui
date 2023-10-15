@@ -159,9 +159,9 @@ const chartOptions = computed(
 function mapAmount(amount: number, scale: ChartScale): number {
   switch (scale) {
     case 'total':
-      return amount * props.totalWeight;
+      return amount;
     case 'normalized':
-      return amount * 100;
+      return (mapAmount(amount, 'total') / props.totalWeight) * 100;
     case 'rdi_child':
       return (mapAmount(amount, 'total') / props.rdi.child) * 100;
     case 'rdi_female':
