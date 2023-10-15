@@ -1,9 +1,9 @@
 <template>
   <div class="column justify-center" v-if="data !== undefined">
-    <DataValidator :data="data" />
     <NutrientCharts :data="data" />
     <ProcessMap :data="data" @show-process="showProcess" />
     <FoodChainTree :data="data" ref="tree" />
+    <DataValidator :data="data" />
     <div v-if="link !== undefined">
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn

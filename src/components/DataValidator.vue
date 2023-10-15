@@ -1,10 +1,26 @@
 <template>
-  <div />
+  <q-banner
+    rounded
+    class="bg-warning text-black q-my-md"
+    v-if="dataErrors.length > 0"
+  >
+    <template v-slot:avatar>
+      <q-avatar icon="warning" class="bg-primary text-white" square rounded />
+    </template>
+    <template v-slot:default
+      ><div>
+        Some data sources were unavailable or invalid. Data below are based on
+        partial information:
+        <ul>
+          <li v-for="error in dataErrors" :key="error">{{ error }}</li>
+        </ul>
+      </div></template
+    >
+  </q-banner>
 </template>
 
 <script setup lang="ts">
 import type { FoodInstance, Process, SaleProcess } from '@fairfooddata/types';
-import { useQuasar } from 'quasar';
 
 import { computed } from 'vue';
 
@@ -71,16 +87,4 @@ function checkTransports(process: Process): string[] {
    */
   return [];
 }
-
-const $q = useQuasar();
-
-if (dataErrors.value.length > 0)
-  $q.notify({
-    message: 'Some data sources were unavailable or invalid',
-    caption: 'Data on this page are based on partial information',
-    timeout: 10000000,
-    position: 'bottom-right',
-    type: 'warning',
-    closeBtn: true,
-  });
 </script>
