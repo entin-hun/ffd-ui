@@ -30,7 +30,7 @@ export const example: Pokedex = {
           deparetureTime: 1696475437,
           duration: 1036800,
         },
-        quantity: 4,
+        quantity: 400,
         instance: {
           category: 'food',
           type: 'strawberry_kiwi_cake',
@@ -38,6 +38,7 @@ export const example: Pokedex = {
           expiryDate: 1984317400,
           format: 'printed',
           ownerId: 'essencefood.tech',
+          quantity: 1000,
           process: {
             type: 'printing',
             knowHow: {
@@ -88,6 +89,7 @@ export const example: Pokedex = {
                   bio: false,
                   grade: 'A',
                   size: '3x2',
+                  quantity: 1,
                 },
               },
               {
@@ -95,6 +97,7 @@ export const example: Pokedex = {
                   category: 'food',
                   type: 'water',
                   bio: true,
+                  quantity: 1,
                 },
                 quantity: 1,
               },
@@ -116,6 +119,7 @@ export const example: Pokedex = {
                   bio: false,
                   grade: 'A',
                   size: '3',
+                  quantity: 3.5,
                   process: {
                     type: 'blending',
                     knowHow: {
@@ -161,6 +165,7 @@ export const example: Pokedex = {
                           format: 'powder',
                           bio: false,
                           grade: 'A',
+                          quantity: 3,
                           process: {
                             type: 'milling',
                             knowHow: {
@@ -224,6 +229,7 @@ export const example: Pokedex = {
                                   bio: false,
                                   grade: 'A',
                                   size: '1.5 cm',
+                                  quantity: 10,
                                   process: {
                                     type: 'freezedrying',
                                     knowHow: {
@@ -273,6 +279,7 @@ export const example: Pokedex = {
                                           bio: false,
                                           grade: 'Ugly',
                                           size: '3 cm',
+                                          quantity: 2000,
                                           process: {
                                             type: 'harvest',
                                             timestamp: 1696339437,
@@ -292,6 +299,7 @@ export const example: Pokedex = {
                                                   category: 'food',
                                                   type: 'Mango',
                                                   bio: true,
+                                                  quantity: 1,
                                                 },
                                                 quantity: 20000,
                                               },

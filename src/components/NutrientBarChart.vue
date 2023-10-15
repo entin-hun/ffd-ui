@@ -161,7 +161,7 @@ function mapAmount(amount: number, scale: ChartScale): number {
     case 'total':
       return amount * props.totalWeight;
     case 'normalized':
-      return amount;
+      return amount * 100;
     case 'rdi_child':
       return (mapAmount(amount, 'total') / props.rdi.child) * 100;
     case 'rdi_female':

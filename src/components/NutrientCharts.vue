@@ -100,7 +100,7 @@ export type ChartScale =
 const chartScaleOptions = computed((): QSelectOption<ChartScale>[] => [
   {
     value: 'total',
-    label: `Total (${props.data.inputInstances[0].quantity * 100} g)`,
+    label: `Total (${props.data.inputInstances[0].quantity} g)`,
   },
   { value: 'normalized', label: 'Per 100 g' },
   { value: 'rdi_child', label: '% RDI (child)' },
@@ -120,6 +120,7 @@ export interface FoodNutrients {
   color: string;
   nutrients: (FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError;
   factor: number;
+  /* x 100 (g|ml) as per FDC*/
   quantity: number;
 }
 
@@ -171,7 +172,7 @@ async function findInstanceNutrients(
                 color: chartColors[chartColorCounter++ % chartColors.length],
                 nutrients: await resolveNutrients(instance),
                 factor: factor,
-                quantity: (quantity * superQuantity) / instance.quantity,
+                quantity: (quantity * superQuantity) / instance.quantity / 100,
               },
             ]
           : instance.process !== undefined
