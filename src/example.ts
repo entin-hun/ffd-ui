@@ -39,6 +39,9 @@ export const example: Pokedex = {
           format: 'printed',
           ownerId: 'essencefood.tech',
           quantity: 1000,
+          iDs: [
+            { registry: 'URL_retail', id: 'https://order.moodbytes.tech/' },
+          ],
           process: {
             type: 'printing',
             knowHow: {
@@ -159,7 +162,7 @@ export const example: Pokedex = {
                           iDs: [
                             {
                               registry: 'FDC',
-                              id: 2344739,
+                              id: '2344739',
                             },
                           ],
                           ownerId: 'blendhub.com',
@@ -224,7 +227,7 @@ export const example: Pokedex = {
                                   iDs: [
                                     {
                                       registry: 'FDC',
-                                      id: 2344738,
+                                      id: '2344738',
                                     },
                                   ],
                                   ownerId: 'essencefood.tech',
@@ -276,7 +279,7 @@ export const example: Pokedex = {
                                           iDs: [
                                             {
                                               registry: 'FDC',
-                                              id: 2344737,
+                                              id: '2344737',
                                             },
                                           ],
                                           ownerId: 'essencefood.tech',

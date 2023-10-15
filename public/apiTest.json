@@ -4,7 +4,7 @@
   "nutrients": [
     {
       "amount": 10,
-      "iDs": { "registry": "FDC", "id": 1079 }
+      "iD": { "registry": "FDC", "id": "1079" }
     }
   ],
   "ownerSDomain": "essencefood.tech",

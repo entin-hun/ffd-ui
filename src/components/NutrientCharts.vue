@@ -165,7 +165,8 @@ async function findInstanceNutrients(
       typeof instance === 'object' &&
       'category' in instance &&
       'type' in instance
-        ? instance.iDs !== undefined || instance.nutrients !== undefined
+        ? instance.iDs?.find((id) => id.registry === 'FDC') !== undefined ||
+          instance.nutrients !== undefined
           ? [
               {
                 instance: instance,
@@ -257,12 +258,12 @@ async function resolveNutrients(
   );
 }
 
-function resolveFdc(id?: number): Promise<FoodNutrient[]> {
+function resolveFdc(id?: string): Promise<FoodNutrient[]> {
   return id === undefined
     ? Promise.reject()
     : fdcApi
         .getFood(
-          id.toFixed(),
+          id,
           undefined,
           Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
         )
@@ -308,7 +309,8 @@ async function resolveFallbackNutrient(
     .then(
       (response) =>
         response.find(
-          (fdcFoodNutrient) => fdcFoodNutrient.nutrient?.id === nutrient.iD.id
+          (fdcFoodNutrient) =>
+            fdcFoodNutrient.nutrient?.id?.toFixed() === nutrient.iD.id
         )?.nutrient
     )
     .then(

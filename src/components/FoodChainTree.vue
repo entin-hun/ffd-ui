@@ -535,12 +535,10 @@ function sizeToNodes(size?: string): QTreeNode[] {
 
 function iDsToNodes(ids?: ID[]): QTreeNode[] {
   return ids !== undefined
-    ? [
-        ids.map((id) => ({
-          label: `${id.registry} ID: ${id.id}`,
-          icon: 'fingerprint',
-        })),
-      ]
+    ? ids.map((id) => ({
+        label: `${id.registry} ID: ${id.id}`,
+        icon: 'fingerprint',
+      }))
     : [];
 }
 </script>
