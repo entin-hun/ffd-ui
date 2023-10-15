@@ -24,7 +24,7 @@ import type {
   Process,
   ProductInstance,
   FoodInstance,
-  IDs,
+  ID,
   CartridgeInstance,
   Transport,
   LocalInputInstance,
@@ -425,7 +425,7 @@ function foodInstanceToNode(
       ...quantityToNodes(quantity),
       ...gradeToNodes(food.grade),
       ...sizeToNodes(food.size),
-      ...fdcIdToNodes(food.iDs),
+      ...iDsToNodes(food.iDs),
       ...(transport !== undefined ? [transportToNode(transport)] : []),
       ...processToNodes(food.process),
     ],
@@ -525,13 +525,13 @@ function sizeToNodes(size?: string): QTreeNode[] {
     : [];
 }
 
-function fdcIdToNodes(id?: IDs): QTreeNode[] {
-  return id !== undefined
+function iDsToNodes(ids?: ID[]): QTreeNode[] {
+  return ids !== undefined
     ? [
-        {
+        ids.map((id) => ({
           label: `${id.registry} ID: ${id.id}`,
           icon: 'fingerprint',
-        },
+        })),
       ]
     : [];
 }

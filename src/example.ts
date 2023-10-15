@@ -156,10 +156,12 @@ export const example: Pokedex = {
                         instance: {
                           category: 'food',
                           type: 'strawberry_lyophilised',
-                          iDs: {
-                            registry: 'FDC',
-                            id: 2344739,
-                          },
+                          iDs: [
+                            {
+                              registry: 'FDC',
+                              id: 2344739,
+                            },
+                          ],
                           ownerId: 'blendhub.com',
                           expiryDate: 1984317400,
                           format: 'powder',
@@ -219,10 +221,12 @@ export const example: Pokedex = {
                                 instance: {
                                   category: 'food',
                                   type: 'Mango_lyophilised',
-                                  iDs: {
-                                    registry: 'FDC',
-                                    id: 2344738,
-                                  },
+                                  iDs: [
+                                    {
+                                      registry: 'FDC',
+                                      id: 2344738,
+                                    },
+                                  ],
                                   ownerId: 'essencefood.tech',
                                   expiryDate: 1759562637,
                                   format: 'slices',
@@ -269,10 +273,12 @@ export const example: Pokedex = {
                                         instance: {
                                           category: 'food',
                                           type: 'Mango',
-                                          iDs: {
-                                            registry: 'FDC',
-                                            id: 2344737,
-                                          },
+                                          iDs: [
+                                            {
+                                              registry: 'FDC',
+                                              id: 2344737,
+                                            },
+                                          ],
                                           ownerId: 'essencefood.tech',
                                           expiryDate: 1696512237,
                                           format: 'whole',

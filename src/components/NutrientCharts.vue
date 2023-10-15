@@ -239,7 +239,9 @@ function foodsChanged(components: FoodNutrients[]) {
 async function resolveNutrients(
   instance: FoodInstance
 ): Promise<(FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError> {
-  return await resolveFdc(instance.iDs?.id).catch(async () =>
+  return await resolveFdc(
+    instance.iDs?.find((id) => id.registry === 'FDC')?.id
+  ).catch(async () =>
     instance.nutrients !== undefined
       ? await Promise.all(
           instance.nutrients.map(async (nutrient) =>
@@ -306,7 +308,7 @@ async function resolveFallbackNutrient(
     .then(
       (response) =>
         response.find(
-          (fdcFoodNutrient) => fdcFoodNutrient.nutrient?.id === nutrient.iDs.id
+          (fdcFoodNutrient) => fdcFoodNutrient.nutrient?.id === nutrient.iD.id
         )?.nutrient
     )
     .then(
