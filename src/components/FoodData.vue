@@ -4,6 +4,17 @@
     <NutrientCharts :data="data" />
     <ProcessMap :data="data" @show-process="showProcess" />
     <FoodChainTree :data="data" ref="tree" />
+    <div v-if="link !== undefined">
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn
+          fab
+          icon="shopping_cart"
+          color="cyan"
+          label="Get Yours"
+          @click="openLink"
+        />
+      </q-page-sticky>
+    </div>
   </div>
 
   <div v-if="request !== undefined">
@@ -27,7 +38,7 @@ import { useQuasar } from 'quasar';
 import NutrientCharts from 'components/NutrientCharts.vue';
 import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
-import { Ref, onMounted, ref } from 'vue';
+import { Ref, computed, onMounted, ref } from 'vue';
 import { useFetch } from '@vueuse/core';
 import type {
   Pokedex,
@@ -140,4 +151,18 @@ const request =
         .get()
         .json<{ metadata: Pokedex }>()
     : undefined;
+
+const link = computed((): string | undefined =>
+  data.value !== undefined &&
+  typeof data.value.inputInstances[0].instance === 'object' &&
+  'type' in data.value.inputInstances[0].instance
+    ? data.value.inputInstances[0].instance.iDs?.find(
+        (id) => id.registry === 'URL_retail'
+      )?.id
+    : undefined
+);
+
+function openLink() {
+  window.open(link.value, '_blank')?.focus();
+}
 </script>
