@@ -279,6 +279,14 @@ function knowHowToNode(recipe: KnowHow): QTreeNode {
         label: `Outputs: ${recipe.outputs}`,
         icon: 'output',
       },
+      ...(recipe.note !== undefined
+        ? [
+            {
+              label: `Note: ${recipe.note}`,
+              icon: 'notes',
+            },
+          ]
+        : []),
     ],
   };
 }
