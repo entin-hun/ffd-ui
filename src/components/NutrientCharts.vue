@@ -173,7 +173,7 @@ async function findInstanceNutrients(
                 color: chartColors[chartColorCounter++ % chartColors.length],
                 nutrients: await resolveNutrients(instance),
                 factor: factor,
-                quantity: (quantity * superQuantity) / instance.quantity / 100,
+                quantity: (quantity * superQuantity) / 100,
               },
             ]
           : instance.process !== undefined
