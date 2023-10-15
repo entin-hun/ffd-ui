@@ -156,7 +156,8 @@ let chartColorCounter = 0;
 
 async function findInstanceNutrients(
   process: Process,
-  factor: number
+  factor: number,
+  superQuantity: number
 ): Promise<FoodNutrients[]> {
   return Promise.all(
     process.inputInstances.map(async ({ instance, quantity }) =>
@@ -170,7 +171,7 @@ async function findInstanceNutrients(
                 color: chartColors[chartColorCounter++ % chartColors.length],
                 nutrients: await resolveNutrients(instance),
                 factor: factor,
-                quantity: quantity,
+                quantity: (quantity * superQuantity) / instance.quantity,
               },
             ]
           : instance.process !== undefined
@@ -180,7 +181,8 @@ async function findInstanceNutrients(
                 (instance.process?.type === 'freezedrying' &&
                 instance.process.temperatureRange.max < 60
                   ? 0.1
-                  : 1)
+                  : 1),
+              (quantity * superQuantity) / instance.quantity
             )
           : []
         : []
@@ -223,7 +225,7 @@ const allNutrients = computed(() => {
 const enabledFoodNutrients = ref(Array<FoodNutrients>());
 
 onMounted(() =>
-  findInstanceNutrients(props.data, 1).then((result) => {
+  findInstanceNutrients(props.data, 1, 1).then((result) => {
     foodNutrients.value = result;
     enabledFoodNutrients.value = foodNutrients.value;
   })
