@@ -7,7 +7,9 @@
         </div>
         <router-view />
         <div class="column items-center">
-          <q-btn rounded class="q-ma-lg" color="cyan">Partner with us!</q-btn>
+          <q-btn rounded class="q-ma-lg" color="cyan" @click="openPartnerLink"
+            >Partner with us!</q-btn
+          >
         </div>
         <div class="row justify-center bg-primary text-white">
           <span class="q-pa-sm"
@@ -20,3 +22,9 @@
     </div>
   </q-layout>
 </template>
+
+<script setup lang="ts">
+function openPartnerLink() {
+  window.open('https://www.fairfooddata.com/', '_blank');
+}
+</script>
