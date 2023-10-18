@@ -22,7 +22,7 @@
       v-if="request.isFetching.value"
       class="column justify-center text-center"
     >
-      <p>Fetching data from Etherneum Swarm...</p>
+      <p>Fetching data from Ethereum Swarm...</p>
       <div><q-spinner size="xl" /></div>
     </div>
     <div v-else-if="request.error.value != null" class="column text-center">
