@@ -11,7 +11,10 @@
             >Partner with us!</q-btn
           >
         </div>
-        <div class="row justify-center bg-primary text-white">
+        <div
+          class="row justify-center bg-primary text-white"
+          style="border-radius: 5px 5px 0px 0px"
+        >
           <span class="q-pa-sm"
             ><div class="column items-center">
               <div>Made with 🥦 by FAIRFOODDATA, LDA.</div>
