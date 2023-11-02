@@ -119,7 +119,7 @@ export interface FoodNutrients {
   instance: FoodInstance;
   color: string;
   nutrients: (FoodNutrient | ResolvedFallbackFoodNutrient)[] | FetchError;
-  factor: number;
+  lyoFactor: number;
   /* x 100 (g|ml) as per FDC*/
   quantity: number;
 }
@@ -157,7 +157,7 @@ let chartColorCounter = 0;
 
 async function findInstanceNutrients(
   process: Process,
-  factor: number,
+  lyoFactor: number,
   superQuantity: number
 ): Promise<FoodNutrients[]> {
   return Promise.all(
@@ -172,17 +172,17 @@ async function findInstanceNutrients(
                 instance: instance,
                 color: chartColors[chartColorCounter++ % chartColors.length],
                 nutrients: await resolveNutrients(instance),
-                factor: factor,
+                lyoFactor: lyoFactor,
                 quantity: (quantity * superQuantity) / 100,
               },
             ]
           : instance.process !== undefined
           ? findInstanceNutrients(
               instance.process,
-              factor *
+              lyoFactor *
                 (instance.process?.type === 'freezedrying' &&
                 instance.process.temperatureRange.max < 60
-                  ? 0.1
+                  ? 10
                   : 1),
               (quantity * superQuantity) / instance.quantity
             )
