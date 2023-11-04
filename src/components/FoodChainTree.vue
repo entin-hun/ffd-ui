@@ -1,20 +1,22 @@
 <template>
   <FoodDataBanner icon="info">Details</FoodDataBanner>
   <div class="q-pa-md">
-    <q-tree :nodes="nodes" node-key="key" ref="tree" @after-show="openDone">
-      <template v-slot:default-header="prop">
-        <div :id="`tree-node-${prop.node.key}`">
-          <div class="row items-center">
-            <q-icon
-              :name="prop.node.icon"
-              :color="prop.node.iconColor"
-              class="q-pr-sm"
-            />
-            <div>{{ prop.node.label }}</div>
+    <div style="max-width: 85cqw; overflow-x: auto; white-space: nowrap">
+      <q-tree :nodes="nodes" node-key="key" ref="tree" @after-show="openDone">
+        <template v-slot:default-header="prop">
+          <div :id="`tree-node-${prop.node.key}`">
+            <div class="row items-center text-no-wrap no-wrap">
+              <q-icon
+                :name="prop.node.icon"
+                :color="prop.node.iconColor"
+                class="q-pr-sm"
+              />
+              <div>{{ prop.node.label }}</div>
+            </div>
           </div>
-        </div>
-      </template>
-    </q-tree>
+        </template>
+      </q-tree>
+    </div>
   </div>
 </template>
 
