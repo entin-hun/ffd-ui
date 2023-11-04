@@ -1,13 +1,18 @@
 <template>
-  <div class="row col-12">
-    <div class="col-3">
-      {{ nutrient.name }}
+  <div class="col col-12">
+    <div class="row justify-between">
+      <div>
+        {{ nutrient.name }}
+      </div>
+      <div class="text-no-wrap">
+        {{ Math.round(enabledAmounts * 100) / 100 }} {{ unit }}
+      </div>
     </div>
-    <div class="chart-container col-7" style="position: relative; height: 2em">
+    <div
+      class="chart-container"
+      style="position: relative; height: 2em; max-width: calc(100% - 10px)"
+    >
       <Bar id="chart" :options="chartOptions" :data="chartData" />
-    </div>
-    <div class="col-2 q-px-md text-no-wrap">
-      {{ Math.round(enabledAmounts * 100) / 100 }} {{ unit }}
     </div>
   </div>
 </template>
@@ -159,7 +164,7 @@ const chartOptions = computed(
 function mapAmount(amount: number, scale: ChartScale): number {
   switch (scale) {
     case 'total':
-      return amount;
+      return Math.round(amount * 100) / 100;
     case 'normalized':
       return (mapAmount(amount, 'total') / props.totalWeight) * 100;
     case 'rdi_child':
