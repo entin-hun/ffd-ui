@@ -123,7 +123,6 @@ const chartOptions = computed(
     responsive: true,
     indexAxis: 'y',
     maintainAspectRatio: false,
-    backgroundColor: 'red',
     scales: {
       x: {
         stacked: true,
