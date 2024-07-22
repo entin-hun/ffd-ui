@@ -14,8 +14,8 @@
         v-for="process in processes"
         :key="process.timestamp"
         :lng-lat="[
-          process.location.coordinates[0],
-          process.location.coordinates[1],
+          process.facility.location.coordinates[0],
+          process.facility.location.coordinates[1],
         ]"
         :popup="{
           offset: [0, -30],
@@ -84,7 +84,8 @@ const emit = defineEmits<{
   showProcess: [timestamp: number];
 }>();
 
-const processes = computed(() => [props.data, ...findProcesses(props.data)]);
+
+const mapboxAccessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 function findProcesses(process: Process): Process[] {
   return [
