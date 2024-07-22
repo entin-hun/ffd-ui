@@ -32,12 +32,12 @@ import type {
   LocalInputInstance,
   TemperatureRange,
   TransportedInputInstance,
-  UrlOr,
+  TokenIdOr,
   MachineInstance,
   Hr,
   Impact,
   KnowHow,
-  SaleProcess,
+  Facility,
 } from '@fairfooddata/types';
 import { DateTime, Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
@@ -47,7 +47,7 @@ import FoodDataBanner from './FoodDataBanner.vue';
 let keyCounter = 0;
 
 const props = defineProps<{
-  data: SaleProcess;
+  data: ProductInstance;
 }>();
 
 const openProcess = (processId: number) => {
@@ -108,7 +108,7 @@ function expandNodes() {
   });
 }
 
-const nodes = computed(() => processToNodes(props.data).map(addNodesIds));
+const nodes = computed(() => instanceToNodes(props.data).map(addNodesIds));
 
 function processToNodes<T extends Process>(process?: T): QTreeNode[] {
   if (process === undefined) return [];
@@ -125,7 +125,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
         {
           ...basicInfo,
           children: [
-            locationToNode(process.location),
+            facilityToNode(process.facility),
             timestampToNode(process.timestamp),
             ...outputInstancesToNodes(process.impacts),
           ],
@@ -136,7 +136,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
         {
           ...basicInfo,
           children: [
-            locationToNode(process.location),
+            facilityToNode(process.facility),
             {
               label: `Price: ${new Intl.NumberFormat('en-US', {
                 style: 'currency',
@@ -157,7 +157,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            locationToNode(process.location),
+            facilityToNode(process.facility),
             knowHowToNode(process.knowHow),
             {
               label: `Shape: ${process.shape}`,
@@ -177,7 +177,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            locationToNode(process.location),
+            facilityToNode(process.facility),
             knowHowToNode(process.knowHow),
             timestampToNode(process.timestamp),
             ...durationToNodes(process.duration),
@@ -193,7 +193,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            locationToNode(process.location),
+            facilityToNode(process.facility),
             knowHowToNode(process.knowHow),
             timestampToNode(process.timestamp),
             ...durationToNodes(process.duration),
@@ -209,7 +209,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            locationToNode(process.location),
+            facilityToNode(process.facility),
             knowHowToNode(process.knowHow),
             timestampToNode(process.timestamp),
             ...durationToNodes(process.duration),
@@ -220,6 +220,14 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
         },
       ];
   }
+}
+
+function facilityToNode(facility: Facility): QTreeNode {
+  return {
+    label: facility.label || 'Unnamed Facility',
+    icon: 'factory',
+    children: [locationToNode(facility.location)],
+  };
 }
 
 function outputInstancesToNodes(outputInstances?: Impact[]): QTreeNode[] {
@@ -352,12 +360,8 @@ function inputInstancesToNodes(
   return inputInstances
     .map((inputInstance) =>
       'transport' in inputInstance
-        ? instanceToNodes(
-            inputInstance.instance,
-            inputInstance.quantity,
-            inputInstance.transport
-          )
-        : instanceToNodes(inputInstance.instance, inputInstance.quantity)
+        ? instanceToNodes(inputInstance.instance, inputInstance.transport)
+        : instanceToNodes(inputInstance.instance)
     )
     .flat();
 }
@@ -382,8 +386,7 @@ function transportToNode(transport: Transport): QTreeNode {
 }
 
 function instanceToNodes(
-  instance: UrlOr<ProductInstance>,
-  quantity: number,
+  instance: TokenIdOr<ProductInstance>,
   transport?: Transport
 ): QTreeNode[] {
   return instance === undefined
@@ -391,7 +394,7 @@ function instanceToNodes(
     : typeof instance === 'string'
     ? [
         {
-          label: `Unresolved URL: ${instance}`,
+          label: `Unresolved token ID: ${instance}`,
           icon: 'tag',
         },
       ]
@@ -405,16 +408,15 @@ function instanceToNodes(
       ]
     : [
         ...(instance.category === 'food'
-          ? [foodInstanceToNode(instance, quantity, transport)]
+          ? [foodInstanceToNode(instance, transport)]
           : instance.category === 'cartridge'
-          ? [cartridgeInstanceToNode(instance, quantity, transport)]
+          ? [cartridgeInstanceToNode(instance, transport)]
           : []),
       ];
 }
 
 function foodInstanceToNode(
   food: FoodInstance,
-  quantity: number,
   transport?: Transport
 ): QTreeNode {
   return {
@@ -432,7 +434,7 @@ function foodInstanceToNode(
           ]
         : []),
       ...bioToNodes(food.bio),
-      ...quantityToNodes(quantity),
+      ...quantityToNodes(food.quantity),
       ...gradeToNodes(food.grade),
       ...sizeToNodes(food.size),
       ...iDsToNodes(food.iDs),
@@ -444,16 +446,15 @@ function foodInstanceToNode(
 
 function cartridgeInstanceToNode(
   cartridge: CartridgeInstance,
-  quantity: number,
   transport?: Transport
 ): QTreeNode {
   return {
-    label: 'Cartridge',
+    label: cartridge.type,
     icon: 'change_history',
     children: [
       ...ownerIdToNodes(cartridge.ownerId),
       ...bioToNodes(cartridge.bio),
-      ...quantityToNodes(quantity),
+      ...quantityToNodes(cartridge.quantity),
       ...gradeToNodes(cartridge.grade),
       ...sizeToNodes(cartridge.size),
       ...(transport !== undefined ? [transportToNode(transport)] : []),

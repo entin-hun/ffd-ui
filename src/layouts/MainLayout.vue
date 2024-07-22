@@ -1,15 +1,15 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <div class="row items-center justify-evenly">
-      <q-page-container style="max-width: 1000px" class="col-12">
+      <q-page-container style="max-width: 1000px">
         <div class="q-mx-xl q-mt-xl">
-          <q-img src="header.svg" class="full-width" />
+          <q-img src="header.svg" class="full-width q-px-sm" />
         </div>
         <router-view />
         <div class="column items-center">
-          <q-btn rounded class="q-ma-lg" color="cyan" @click="openPartnerLink"
-            >Partner with us!</q-btn
-          >
+          <q-btn rounded class="q-ma-lg" color="cyan" @click="openPartnerLink">
+            Partner with us!
+          </q-btn>
         </div>
         <div
           class="row justify-center bg-primary text-white"

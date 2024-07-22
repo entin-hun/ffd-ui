@@ -20,21 +20,25 @@
 </template>
 
 <script setup lang="ts">
-import type { FoodInstance, Process, SaleProcess } from '@fairfooddata/types';
+import type { FoodInstance, ProductInstance } from '@fairfooddata/types';
 
 import { computed } from 'vue';
 
 const props = defineProps<{
-  data: SaleProcess;
+  data: ProductInstance;
 }>();
 
 const dataErrors = computed(() => [
   ...checkUnresolvedUrls(props.data),
-  ...(props.data === undefined
+  ...(props.data === undefined ||
+  !('process' in props.data) ||
+  props.data.process === undefined
     ? []
-    : props.data.inputInstances
+    : props.data.process.inputInstances
         .map((instance) =>
-          typeof instance.instance === 'object' && 'type' in instance.instance
+          typeof instance.instance === 'object' &&
+          'category' in instance.instance &&
+          instance.instance.category === 'food'
             ? checkNutrients(instance.instance)
             : []
         )
@@ -42,18 +46,20 @@ const dataErrors = computed(() => [
   ...checkTransports(props.data),
 ]);
 
-function checkUnresolvedUrls(process?: Process): string[] {
-  return process === undefined
+function checkUnresolvedUrls(instance?: ProductInstance): string[] {
+  return instance === undefined ||
+    !('process' in instance) ||
+    instance.process === undefined
     ? []
-    : process.inputInstances
+    : instance.process.inputInstances
         .map((inputInstance) =>
           typeof inputInstance.instance === 'object'
             ? 'errorMessage' in inputInstance.instance
               ? [
-                  `${process.type} has unresolvable input instance (${inputInstance.instance.errorMessage})`,
+                  `${instance.process?.type} has unresolvable input instance (${inputInstance.instance.errorMessage})`,
                 ]
               : 'process' in inputInstance.instance
-              ? checkUnresolvedUrls(inputInstance.instance.process)
+              ? checkUnresolvedUrls(inputInstance.instance)
               : []
             : []
         )
@@ -72,7 +78,8 @@ function checkNutrients(instance: FoodInstance): string[] {
       : instance.process.inputInstances
           .map((inputInstance) =>
             typeof inputInstance.instance === 'object' &&
-            'type' in inputInstance.instance
+            'category' in inputInstance.instance &&
+            inputInstance.instance.category === 'food'
               ? checkNutrients(inputInstance.instance)
               : []
           )
@@ -81,7 +88,7 @@ function checkNutrients(instance: FoodInstance): string[] {
   return inputErrors;
 }
 
-function checkTransports(process: Process): string[] {
+function checkTransports(instance: ProductInstance): string[] {
   /* TODO check if every inputInstance is either geographically
    * local or has transport
    */

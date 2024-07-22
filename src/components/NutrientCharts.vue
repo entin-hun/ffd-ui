@@ -56,7 +56,7 @@
         :nutrient="nutrient.nutrient"
         :enabled-foods="enabledFoodNutrients"
         :scale="chartScale"
-        :total-weight="data.inputInstances[0].quantity"
+        :total-weight="data.quantity"
         :rdi="nutrientsOfInterest.get(nutrient.nutrient.id)!"
       />
     </div>
@@ -67,11 +67,11 @@
 <script setup lang="ts">
 import { Ref, computed, onMounted, ref } from 'vue';
 import type {
-  Process,
   FoodInstance,
-  SaleProcess,
   FetchError,
   FallbackFoodNutrient,
+  ProductInstance,
+  TokenIdOr,
 } from '@fairfooddata/types';
 import FoodDataBanner from './FoodDataBanner.vue';
 import FoodInstanceSelector from './FoodInstanceSelector.vue';
@@ -87,7 +87,7 @@ import FoodImpacts from './FoodImpacts.vue';
 import { QSelectOption } from 'quasar';
 
 const props = defineProps<{
-  data: SaleProcess;
+  data: ProductInstance;
 }>();
 
 export type ChartScale =
@@ -100,7 +100,7 @@ export type ChartScale =
 const chartScaleOptions = computed((): QSelectOption<ChartScale>[] => [
   {
     value: 'total',
-    label: `Total (${props.data.inputInstances[0].quantity} g)`,
+    label: `Total (${props.data.quantity} g)`,
   },
   { value: 'normalized', label: 'Per 100 g' },
   { value: 'rdi_child', label: '% RDI (child)' },
@@ -156,39 +156,41 @@ const nutrientsOfInterest: Map<number, NutrientRdi> = new Map([
 let chartColorCounter = 0;
 
 async function findInstanceNutrients(
-  process: Process,
+  instance: TokenIdOr<ProductInstance>,
   lyoFactor: number,
   superQuantity: number
 ): Promise<FoodNutrients[]> {
   return Promise.all(
-    process.inputInstances.map(async ({ instance, quantity }) =>
-      typeof instance === 'object' &&
+    typeof instance === 'object' &&
       'category' in instance &&
-      'type' in instance
-        ? instance.iDs?.find((id) => id.registry === 'FDC') !== undefined ||
-          instance.nutrients !== undefined
-          ? [
-              {
-                instance: instance,
-                color: chartColors[chartColorCounter++ % chartColors.length],
-                nutrients: await resolveNutrients(instance),
-                lyoFactor: lyoFactor,
-                quantity: (quantity * superQuantity) / 100,
-              },
-            ]
-          : instance.process !== undefined
-          ? findInstanceNutrients(
-              instance.process,
-              lyoFactor *
-                (instance.process?.type === 'freezedrying' &&
-                instance.process.temperatureRange.max < 60
-                  ? 10
-                  : 1),
-              (quantity * superQuantity) / instance.quantity
-            )
-          : []
+      'category' in instance &&
+      instance.category === 'food'
+      ? instance.iDs?.find((id) => id.registry === 'FDC') !== undefined ||
+        instance.nutrients !== undefined
+        ? [
+            {
+              instance: instance,
+              color: chartColors[chartColorCounter++ % chartColors.length],
+              nutrients: await resolveNutrients(instance),
+              lyoFactor: lyoFactor,
+              quantity: (instance.quantity * superQuantity) / 100,
+            },
+          ]
+        : instance.process !== undefined
+        ? instance.process.inputInstances.map(
+            async ({ instance: inputInstance, quantity }) =>
+              findInstanceNutrients(
+                inputInstance,
+                lyoFactor *
+                  (instance.process?.type === 'freezedrying' &&
+                  instance.process.temperatureRange.max < 60
+                    ? 10
+                    : 1),
+                (quantity * superQuantity) / instance.quantity
+              )
+          )
         : []
-    )
+      : []
   ).then((result) => Promise.resolve(result.flat()));
 }
 

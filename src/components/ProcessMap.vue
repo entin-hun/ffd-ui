@@ -2,7 +2,7 @@
   <FoodDataBanner icon="map">Map of Activities</FoodDataBanner>
   <div class="q-pa-md">
     <MapboxMap
-      accessToken="pk.eyJ1Ijoic3phYm9sY3NzemVrZWx5aSIsImEiOiJjbG5kcDUxcm4wNzZ5MmltbjdldmhtODg5In0.T4uW0nekNUbIzLEfg6INNA"
+      :accessToken="mapboxAccessToken"
       map-style="mapbox://styles/mapbox/satellite-streets-v12"
       style="height: 400px"
       :center="[0, 0]"
@@ -65,7 +65,7 @@ import {
 } from '@studiometa/vue-mapbox-gl';
 import type {
   Process,
-  SaleProcess,
+  ProductInstance,
   TransportMethod,
 } from '@fairfooddata/types';
 import { computed } from 'vue';
@@ -77,29 +77,32 @@ import MapboxGl from 'mapbox-gl';
 import { colors } from 'quasar';
 
 const props = defineProps<{
-  data: SaleProcess;
+  data: ProductInstance;
 }>();
 
 const emit = defineEmits<{
   showProcess: [timestamp: number];
 }>();
 
+const processes = computed(() => findProcesses(props.data));
 
 const mapboxAccessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
-function findProcesses(process: Process): Process[] {
-  return [
-    process,
-    ...process.inputInstances
-      .map((inputInstance) =>
-        typeof inputInstance.instance === 'object' &&
-        'process' in inputInstance.instance &&
-        inputInstance.instance.process !== undefined
-          ? findProcesses(inputInstance.instance.process)
-          : []
-      )
-      .flat(),
-  ];
+function findProcesses(instance: ProductInstance): Process[] {
+  return 'process' in instance && instance.process !== undefined
+    ? [
+        instance.process,
+        ...instance.process.inputInstances
+          .map((inputInstance) =>
+            typeof inputInstance.instance === 'object' &&
+            'process' in inputInstance.instance &&
+            inputInstance.instance.process !== undefined
+              ? findProcesses(inputInstance.instance)
+              : []
+          )
+          .flat(),
+      ]
+    : [];
 }
 
 function mapLoaded({ target }: { target: MapboxGl.Map }) {
@@ -191,26 +194,31 @@ const transports = computed((): TransportLayer[] =>
   }))
 );
 
-function getTransports(process: Process): InstanceTransport[] {
-  return process.inputInstances
-    .map((inputInstance) =>
-      typeof inputInstance.instance === 'object' &&
-      'type' in inputInstance.instance &&
-      inputInstance.instance.process !== undefined
-        ? [
-            {
-              from: inputInstance.instance.process.location.coordinates,
-              to: process.location.coordinates,
-              cargo: inputInstance.instance.type,
-              method:
-                'transport' in inputInstance
-                  ? inputInstance.transport.method
-                  : undefined,
-            } as InstanceTransport,
-            ...getTransports(inputInstance.instance.process),
-          ]
-        : undefined
-    )
+function getTransports(instance: ProductInstance): InstanceTransport[] {
+  return (
+    instance.category === 'food' && instance.process !== undefined
+      ? instance.process.inputInstances.map((inputInstance) =>
+          typeof inputInstance.instance === 'object' &&
+          'category' in inputInstance.instance &&
+          inputInstance.instance.category === 'food' &&
+          inputInstance.instance.process !== undefined
+            ? [
+                {
+                  from: inputInstance.instance.process.facility.location
+                    .coordinates,
+                  to: instance.process?.facility.location.coordinates,
+                  cargo: inputInstance.instance.type,
+                  method:
+                    'transport' in inputInstance
+                      ? inputInstance.transport.method
+                      : undefined,
+                } as InstanceTransport,
+                ...getTransports(inputInstance.instance),
+              ]
+            : undefined
+        )
+      : []
+  )
     .flat()
     .filter(
       (transport): transport is InstanceTransport => transport !== undefined

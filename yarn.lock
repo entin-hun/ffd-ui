@@ -78,10 +78,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.51.0.tgz#6d419c240cfb2b66da37df230f7e7eef801c32fa"
   integrity sha512-HxjQ8Qn+4SI3/AFv6sOrDB+g6PpUTDwSJiQqOrnneEk8L71161srI9gjzzZvYVbzHiVg/BvcH95+cK/zfIt4pg==
 
-"@fairfooddata/types@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@fairfooddata/types/-/types-0.0.2.tgz#741a0cef21f82bc7839df91e6871c0137c69b097"
-  integrity sha512-sBBzEQVZ8JmI2BzcvB36NAPVyhTrHGPwtqik7Q6kJLSv6JhNcMNyne8I0nBfOKh3m40PegT6FXNnbGUpaRB3ig==
+"@fairfooddata/types@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@fairfooddata/types/-/types-0.0.6.tgz#983c5cad0c4608a7ca40e61d44b3ec37b45c2f63"
+  integrity sha512-+PtCDmz0/K8a4o0bhK60r69tThOYIg7x9WlV8x2fog3HRdEfaT4Kz7w5ZtTmqpMmbfTLG4nKQECHpsyYFYAs5Q==
 
 "@humanwhocodes/config-array@^0.11.11":
   version "0.11.11"
@@ -1516,10 +1516,10 @@ dot-prop@6.0.1:
   dependencies:
     is-obj "^2.0.0"
 
-dotenv@^16.3.1:
-  version "16.3.1"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
-  integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
+dotenv@^16.4.5:
+  version "16.4.5"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
+  integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
 
 earcut@^2.2.4:
   version "2.2.4"
