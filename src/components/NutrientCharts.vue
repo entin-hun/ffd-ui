@@ -163,7 +163,6 @@ async function findInstanceNutrients(
   return Promise.all(
     typeof instance === 'object' &&
       'category' in instance &&
-      'category' in instance &&
       instance.category === 'food'
       ? instance.iDs?.find((id) => id.registry === 'FDC') !== undefined ||
         instance.nutrients !== undefined
