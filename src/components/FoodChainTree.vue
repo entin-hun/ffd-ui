@@ -38,6 +38,8 @@ import type {
   Impact,
   KnowHow,
   Facility,
+  Price,
+  Priced,
 } from '@fairfooddata/types';
 import { DateTime, Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
@@ -47,7 +49,7 @@ import FoodDataBanner from './FoodDataBanner.vue';
 let keyCounter = 0;
 
 const props = defineProps<{
-  data: ProductInstance;
+  data: Priced<ProductInstance>;
 }>();
 
 const openProcess = (processId: number) => {
@@ -108,7 +110,9 @@ function expandNodes() {
   });
 }
 
-const nodes = computed(() => instanceToNodes(props.data).map(addNodesIds));
+const nodes = computed(() =>
+  pricedInstanceToNodes(props.data).map(addNodesIds)
+);
 
 function processToNodes<T extends Process>(process?: T): QTreeNode[] {
   if (process === undefined) return [];
@@ -137,15 +141,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             facilityToNode(process.facility),
-            {
-              label: `Price: ${new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: process.price.currency,
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(process.price.amount)}`,
-              icon: 'paid',
-            },
+            priceToNode(process.price),
             ...inputInstancesToNodes(process.inputInstances),
             ...outputInstancesToNodes(process.impacts),
           ],
@@ -220,6 +216,18 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
         },
       ];
   }
+}
+
+function priceToNode(price: Price) {
+  return {
+    label: `Price: ${new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: price.currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price.amount)}`,
+    icon: 'paid',
+  };
 }
 
 function facilityToNode(facility: Facility): QTreeNode {
@@ -383,6 +391,10 @@ function transportToNode(transport: Transport): QTreeNode {
       },
     ],
   };
+}
+
+function pricedInstanceToNodes(priced: Priced<ProductInstance>): QTreeNode[] {
+  return [...instanceToNodes(priced), priceToNode(priced.price)];
 }
 
 function instanceToNodes(
