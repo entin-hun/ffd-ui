@@ -40,7 +40,13 @@ import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
 import { Ref, computed, onMounted, ref } from 'vue';
 import { useFetch } from '@vueuse/core';
-import type { Pokedex, ProductInstance } from '@fairfooddata/types';
+import type {
+  Pokedex,
+  Priced,
+  ProductInstance,
+  TokenId,
+  TokenIdOr,
+} from '@fairfooddata/types';
 import { example } from '../example';
 
 import { AxiosError } from 'axios';
@@ -49,13 +55,13 @@ import { api } from 'boot/axios';
 
 interface MinterMetadataResponse {
   swarmReference: string;
-  content: Pokedex & { _nftId: string };
+  content: Pokedex & { _nftId: TokenId };
 }
 
 const $q = useQuasar();
 
 const props = defineProps<{
-  tokenId: string | undefined;
+  tokenId: TokenId | undefined;
 }>();
 
 if (props.tokenId === undefined)
@@ -68,10 +74,10 @@ if (props.tokenId === undefined)
     closeBtn: true,
   });
 
-const data: Ref<ProductInstance | undefined> = ref(undefined);
+const data: Ref<Priced<ProductInstance> | undefined> = ref(undefined);
 const tree = ref<InstanceType<typeof FoodChainTree>>();
 
-function resolveUrls(instance: ProductInstance): Promise<void> {
+function resolveTokenIds(instance: ProductInstance): Promise<void> {
   return instance.category !== 'food' || instance.process === undefined
     ? Promise.resolve()
     : Promise.all(
@@ -81,7 +87,12 @@ function resolveUrls(instance: ProductInstance): Promise<void> {
                 .get<MinterMetadataResponse>(
                   `/metadata/${inputInstance.instance}`
                 )
-                .then((result) => Promise.resolve(result.data.content.instance))
+                .then((result) =>
+                  Promise.resolve({
+                    _tokenId: result.data.content._nftId,
+                    ...result.data.content.instance,
+                  })
+                )
                 .catch((error: AxiosError) =>
                   Promise.resolve({
                     errorMessage: error.message,
@@ -98,7 +109,7 @@ function resolveUrls(instance: ProductInstance): Promise<void> {
                 typeof inputInstance.instance === 'object' &&
                 'process' in inputInstance.instance &&
                 inputInstance.instance.process !== undefined
-                  ? resolveUrls(inputInstance.instance)
+                  ? resolveTokenIds(inputInstance.instance)
                   : Promise.resolve()
               )
             ).then(() => Promise.resolve())
@@ -107,11 +118,13 @@ function resolveUrls(instance: ProductInstance): Promise<void> {
 
 onMounted(() => {
   if (request === undefined)
-    resolveUrls(example.instance).then(() => (data.value = example.instance));
+    resolveTokenIds(example.instance).then(
+      () => (data.value = example.instance)
+    );
   else
     request.then((result) => {
       if (result.data.value !== null) {
-        resolveUrls(result.data.value.content.instance).then(
+        resolveTokenIds(result.data.value.content.instance).then(
           () => (data.value = result.data.value?.content.instance)
         );
       }

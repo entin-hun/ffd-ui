@@ -14,14 +14,17 @@
 </template>
 
 <script setup lang="ts">
+import { TokenId } from '@fairfooddata/types';
 import FoodData from 'components/FoodData.vue';
 
 import qs from 'query-string';
 import { computed } from 'vue';
 
-const tokenId = computed((): string | undefined => {
+const tokenId = computed((): TokenId | undefined => {
   const args = qs.parse(qs.extract(window.location.href));
 
-  return typeof args['tokenId'] === 'string' ? args['tokenId'] : undefined;
+  return typeof args.tokenId === 'string' && args.tokenId.startsWith('0x')
+    ? (args['tokenId'] as TokenId)
+    : undefined;
 });
 </script>
