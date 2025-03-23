@@ -15,6 +15,11 @@ export const example: Pokedex = {
     ownerId: 'essencefood.tech',
     quantity: 1000,
     iDs: [{ registry: 'URL_retail', id: 'https://order.moodbytes.tech/' }],
+    price: {
+      amount: 1000,
+      currency: '0x18c8a7ec7897177e4529065a7e7b0878358b3bff',
+      type: 'budget',
+    },
     process: {
       type: 'printing',
       knowHow: {
