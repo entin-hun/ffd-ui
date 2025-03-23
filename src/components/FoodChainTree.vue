@@ -218,14 +218,18 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
   }
 }
 
-function priceToNode(price: Price) {
+function priceToNode(price: Price): QTreeNode {
   return {
-    label: `Price: ${new Intl.NumberFormat('en-US', {
+    label: `Price: ${
+      price.currency.startsWith('0x')
+        ? `${price.amount} ${price.currency}`
+        : new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: price.currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(price.amount)}`,
+          }).format(price.amount)
+    }`,
     icon: 'paid',
   };
 }
