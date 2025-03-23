@@ -265,8 +265,8 @@ function resolveFdc(id?: string): Promise<FoodNutrient[]> {
     : fdcApi
         .getFood(
           id,
-          undefined,
-          Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
+          undefined
+          // Array.from(nutrientsOfInterest.keys()) // doesn't work so we filter ourselves later
         )
         .then((response) =>
           typeof response.data === 'object' &&
