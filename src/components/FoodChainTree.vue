@@ -110,9 +110,7 @@ function expandNodes() {
   });
 }
 
-const nodes = computed(() =>
-  pricedInstanceToNodes(props.data).map(addNodesIds)
-);
+const nodes = computed(() => instanceToNodes(props.data).map(addNodesIds));
 
 function processToNodes<T extends Process>(process?: T): QTreeNode[] {
   if (process === undefined) return [];
@@ -224,10 +222,10 @@ function priceToNode(price: Price): QTreeNode {
       price.currency.startsWith('0x')
         ? `${price.amount} ${price.currency}`
         : new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: price.currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+            style: 'currency',
+            currency: price.currency,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
           }).format(price.amount)
     }`,
     icon: 'paid',
@@ -397,12 +395,8 @@ function transportToNode(transport: Transport): QTreeNode {
   };
 }
 
-function pricedInstanceToNodes(priced: Priced<ProductInstance>): QTreeNode[] {
-  return [...instanceToNodes(priced), priceToNode(priced.price)];
-}
-
 function instanceToNodes(
-  instance: TokenIdOr<ProductInstance>,
+  instance: TokenIdOr<Priced<ProductInstance> | ProductInstance>,
   transport?: Transport
 ): QTreeNode[] {
   return instance === undefined
@@ -432,7 +426,7 @@ function instanceToNodes(
 }
 
 function foodInstanceToNode(
-  food: FoodInstance,
+  food: FoodInstance | Priced<FoodInstance>,
   transport?: Transport
 ): QTreeNode {
   return {
@@ -453,6 +447,7 @@ function foodInstanceToNode(
       ...quantityToNodes(food.quantity),
       ...gradeToNodes(food.grade),
       ...sizeToNodes(food.size),
+      ...('price' in food ? [priceToNode(food.price)] : []),
       ...iDsToNodes(food.iDs),
       ...(transport !== undefined ? [transportToNode(transport)] : []),
       ...processToNodes(food.process),
@@ -461,7 +456,7 @@ function foodInstanceToNode(
 }
 
 function cartridgeInstanceToNode(
-  cartridge: CartridgeInstance,
+  cartridge: CartridgeInstance | Priced<CartridgeInstance>,
   transport?: Transport
 ): QTreeNode {
   return {
@@ -473,6 +468,8 @@ function cartridgeInstanceToNode(
       ...quantityToNodes(cartridge.quantity),
       ...gradeToNodes(cartridge.grade),
       ...sizeToNodes(cartridge.size),
+      ...('price' in cartridge ? [priceToNode(cartridge.price)] : []),
+
       ...(transport !== undefined ? [transportToNode(transport)] : []),
     ],
   };
