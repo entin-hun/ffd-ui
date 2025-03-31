@@ -78,10 +78,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.51.0.tgz#6d419c240cfb2b66da37df230f7e7eef801c32fa"
   integrity sha512-HxjQ8Qn+4SI3/AFv6sOrDB+g6PpUTDwSJiQqOrnneEk8L71161srI9gjzzZvYVbzHiVg/BvcH95+cK/zfIt4pg==
 
-"@fairfooddata/types@0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@fairfooddata/types/-/types-0.0.8.tgz#ffd241fa6290b86e715e9871f94135f9ea7e0eec"
-  integrity sha512-FLArKzJLjvAXJn7wB8/bt/whsmhwfkNH6xAETd2thHT68H3mVRLROhi4nDrLIlzsPn7Yzt6tW/x1Z1G8aHT4cQ==
+"@fairfooddata/types@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@fairfooddata/types/-/types-0.0.9.tgz#64cd1de5ed20524b03901407a24ad22c38df7e85"
+  integrity sha512-YBe9stvlolOhEBTIOKhtqe61L4WOFk7TMbvo1euG3lZLG7qyEphVVTMp74BV/cws1VUCA71PPwn4PPXAUtaLjA==
 
 "@humanwhocodes/config-array@^0.11.11":
   version "0.11.11"
