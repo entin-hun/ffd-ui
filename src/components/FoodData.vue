@@ -45,7 +45,6 @@ import type {
   Priced,
   ProductInstance,
   TokenId,
-  TokenIdOr,
 } from '@fairfooddata/types';
 import { example } from '../example';
 
