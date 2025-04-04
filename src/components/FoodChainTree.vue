@@ -399,14 +399,6 @@ function instanceToNodes(
           icon: 'tag',
         },
       ]
-    : 'errorMessage' in instance
-    ? [
-        {
-          label: instance.errorMessage,
-          icon: 'error_outline',
-          iconColor: 'red',
-        },
-      ]
     : [
         ...(instance.category === 'food'
           ? [foodInstanceToNode(instance, transport)]

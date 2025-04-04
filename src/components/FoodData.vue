@@ -48,7 +48,6 @@ import type {
 } from '@fairfooddata/types';
 import { example } from '../example';
 
-import { AxiosError } from 'axios';
 import { api } from 'boot/axios';
 // import typia from 'typia';
 
@@ -92,12 +91,12 @@ function resolveTokenIds(instance: ProductInstance): Promise<void> {
                     ...result.data.content.instance,
                   })
                 )
-                .catch((error: AxiosError) =>
-                  Promise.resolve({
-                    errorMessage: error.message,
-                  })
-                )
-            : Promise.resolve(inputInstance.instance)
+            : // .catch((error: AxiosError) =>
+              //   Promise.resolve({
+              //     errorMessage: error.message,
+              //   })
+              // )
+              Promise.resolve(inputInstance.instance)
           ).then((resolved) => (inputInstance.instance = resolved))
         )
       ).then(() =>
