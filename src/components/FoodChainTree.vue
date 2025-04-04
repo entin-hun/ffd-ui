@@ -37,9 +37,9 @@ import type {
   Hr,
   Impact,
   KnowHow,
-  Facility,
   Price,
   Priced,
+  Site,
 } from '@fairfooddata/types';
 import { DateTime, Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
@@ -127,7 +127,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
         {
           ...basicInfo,
           children: [
-            facilityToNode(process.facility),
+            siteToNode(process.site),
             timestampToNode(process.timestamp),
             ...outputInstancesToNodes(process.impacts),
           ],
@@ -138,7 +138,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
         {
           ...basicInfo,
           children: [
-            facilityToNode(process.facility),
+            siteToNode(process.site),
             priceToNode(process.price),
             ...inputInstancesToNodes(process.inputInstances),
             ...outputInstancesToNodes(process.impacts),
@@ -151,7 +151,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            facilityToNode(process.facility),
+            siteToNode(process.site),
             knowHowToNode(process.knowHow),
             {
               label: `Shape: ${process.shape}`,
@@ -171,7 +171,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            facilityToNode(process.facility),
+            siteToNode(process.site),
             knowHowToNode(process.knowHow),
             timestampToNode(process.timestamp),
             ...durationToNodes(process.duration),
@@ -187,7 +187,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            facilityToNode(process.facility),
+            siteToNode(process.site),
             knowHowToNode(process.knowHow),
             timestampToNode(process.timestamp),
             ...durationToNodes(process.duration),
@@ -203,7 +203,7 @@ function processToNodes<T extends Process>(process?: T): QTreeNode[] {
           ...basicInfo,
           children: [
             machineInstanceToNode(process.machineInstance),
-            facilityToNode(process.facility),
+            siteToNode(process.site),
             knowHowToNode(process.knowHow),
             timestampToNode(process.timestamp),
             ...durationToNodes(process.duration),
@@ -223,11 +223,11 @@ function priceToNode(price: Price): QTreeNode {
   };
 }
 
-function facilityToNode(facility: Facility): QTreeNode {
+function siteToNode(site: Site): QTreeNode {
   return {
-    label: facility.label || 'Unnamed Facility',
+    label: site.label || 'Unnamed Facility',
     icon: 'factory',
-    children: [locationToNode(facility.location)],
+    children: [locationToNode(site.location)],
   };
 }
 

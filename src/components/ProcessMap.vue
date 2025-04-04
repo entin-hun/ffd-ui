@@ -14,8 +14,8 @@
         v-for="process in processes"
         :key="process.timestamp"
         :lng-lat="[
-          process.facility.location.coordinates[0],
-          process.facility.location.coordinates[1],
+          process.site.location.coordinates[0],
+          process.site.location.coordinates[1],
         ]"
         :popup="{
           offset: [0, -30],
@@ -204,9 +204,9 @@ function getTransports(instance: ProductInstance): InstanceTransport[] {
           inputInstance.instance.process !== undefined
             ? [
                 {
-                  from: inputInstance.instance.process.facility.location
+                  from: inputInstance.instance.process.site.location
                     .coordinates,
-                  to: instance.process?.facility.location.coordinates,
+                  to: instance.process?.site.location.coordinates,
                   cargo: inputInstance.instance.type,
                   method:
                     'transport' in inputInstance
