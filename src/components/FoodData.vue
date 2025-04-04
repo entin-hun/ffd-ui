@@ -1,9 +1,10 @@
 <template>
   <div class="column justify-center" v-if="data !== undefined">
-    <NutrientCharts :data="data" />
-    <ProcessMap :data="data" @show-process="showProcess" />
-    <FoodChainTree :data="data" ref="tree" />
-    <DataValidator :data="data" />
+    <FoodDescription :data="data" />
+    <NutrientCharts :data="data.instance" />
+    <ProcessMap :data="data.instance" @show-process="showProcess" />
+    <FoodChainTree :data="data.instance" ref="tree" />
+    <DataValidator :data="data.instance" />
     <div v-if="link !== undefined">
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn
@@ -35,17 +36,13 @@
 <script setup lang="ts">
 import DataValidator from './DataValidator.vue';
 import { useQuasar } from 'quasar';
+import FoodDescription from 'components/FoodDescription.vue';
 import NutrientCharts from 'components/NutrientCharts.vue';
 import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
 import { Ref, computed, onMounted, ref } from 'vue';
 import { useFetch } from '@vueuse/core';
-import type {
-  Pokedex,
-  Priced,
-  ProductInstance,
-  TokenId,
-} from '@fairfooddata/types';
+import type { Pokedex, ProductInstance, TokenId } from '@fairfooddata/types';
 import { example } from '../example';
 
 import { api } from 'boot/axios';
@@ -72,7 +69,7 @@ if (props.tokenId === undefined)
     closeBtn: true,
   });
 
-const data: Ref<Priced<ProductInstance> | undefined> = ref(undefined);
+const data: Ref<Pokedex | undefined> = ref(undefined);
 const tree = ref<InstanceType<typeof FoodChainTree>>();
 
 function resolveTokenIds(instance: ProductInstance): Promise<void> {
@@ -116,14 +113,12 @@ function resolveTokenIds(instance: ProductInstance): Promise<void> {
 
 onMounted(() => {
   if (request === undefined)
-    resolveTokenIds(example.instance).then(
-      () => (data.value = example.instance)
-    );
+    resolveTokenIds(example.instance).then(() => (data.value = example));
   else
     request.then((result) => {
       if (result.data.value !== null) {
         resolveTokenIds(result.data.value.content.instance).then(
-          () => (data.value = result.data.value?.content.instance)
+          () => (data.value = result.data.value?.content)
         );
       }
     });
@@ -155,9 +150,9 @@ const request =
 const link = computed((): string | undefined =>
   data.value !== undefined &&
   typeof data.value === 'object' &&
-  'category' in data.value &&
-  data.value.category === 'food'
-    ? data.value.iDs?.find((id) => id.registry === 'URL_retail')?.id
+  'category' in data.value.instance &&
+  data.value.instance.category === 'food'
+    ? data.value.instance.iDs?.find((id) => id.registry === 'URL_retail')?.id
     : undefined
 );
 
