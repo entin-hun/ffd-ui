@@ -2,7 +2,7 @@
   "name": "@fairfooddata/ui",
   "version": "0.0.1",
   "description": "The transparent food chain",
-  "productName": "Fair Food Data",
+  "productName": "trace.market",
   "author": "Szabolcs Szekelyi <szabi@aura-labs.cc>",
   "license": "UNLICENSED",
   "scripts": {
