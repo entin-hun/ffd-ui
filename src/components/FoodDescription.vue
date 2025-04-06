@@ -1,5 +1,9 @@
 <template>
-  <div v-html="description" />
+  <div
+    v-html="description"
+    style="width: 95%; align-self: center"
+    class="q-py-md"
+  />
 </template>
 
 <script setup lang="ts">
