@@ -1,4 +1,4 @@
-import { Pokedex } from '@fairfooddata/types';
+import { Pokedex } from '@trace.market/types';
 
 export const example: Pokedex = {
   description:

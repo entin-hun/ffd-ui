@@ -2,21 +2,19 @@
   <div class="row justify-around">
     <div class="col-xs-0 col-sm-1" />
     <div class="column items-center col-3">
-      <div class="text-h4 q-pa-sm impact-value text-no-wrap">
-        {{ getTotalImpact('carbon') }} g
+      <div class="text-h5 q-pa-sm impact-value text-no-wrap">
+        {{ getTotalImpact('carbon').toFixed(2) }} kg
       </div>
-      <div class="text-center impact-label">
-        CO2e CARBON FOOTPRINT<br />(avoided)
-      </div>
+      <div class="text-center impact-label">CO2e CARBON FOOTPRINT<br /></div>
     </div>
     <div class="column items-center col-3">
-      <div class="text-h4 q-pa-sm impact-value text-no-wrap">
-        {{ getTotalImpact('water') }} l
+      <div class="text-h5 q-pa-sm impact-value text-no-wrap">
+        {{ getTotalImpact('water').toFixed(2) }} l
       </div>
-      <div class="text-center impact-label">WATER FOOTPRINT<br />(avoided)</div>
+      <div class="text-center impact-label">WATER FOOTPRINT<br /></div>
     </div>
     <div class="column items-center col-3">
-      <div class="text-h4 q-pa-sm impact-value text-no-wrap">
+      <div class="text-h5 q-pa-sm impact-value text-no-wrap">
         {{ getBio() ? 'YES' : 'NO' }}
       </div>
       <div class="text-center impact-label">BIO</div>
@@ -26,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FoodInstance, Impact } from '@fairfooddata/types';
+import type { FoodInstance, Impact } from '@trace.market/types';
 import { FoodNutrients } from './NutrientCharts.vue';
 
 const props = defineProps<{

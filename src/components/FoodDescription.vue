@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { Pokedex } from '@fairfooddata/types';
+import { Pokedex } from '@trace.market/types';
 import { computed } from 'vue';
 
 const props = defineProps<{ data: Pokedex }>();

@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pb-lg">
+  <div class="q-pb-lg" style="margin-top: 10px">
     <FoodDataBanner icon="percent">
       <div class="row justify-between items-center">
         <div class="col">
@@ -72,7 +72,7 @@ import type {
   FallbackFoodNutrient,
   ProductInstance,
   TokenIdOr,
-} from '@fairfooddata/types';
+} from '@trace.market/types';
 import FoodDataBanner from './FoodDataBanner.vue';
 import FoodInstanceSelector from './FoodInstanceSelector.vue';
 import {

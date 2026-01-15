@@ -40,7 +40,7 @@ import type {
   Price,
   Priced,
   Site,
-} from '@fairfooddata/types';
+} from '@trace.market/types';
 import { DateTime, Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
 import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';

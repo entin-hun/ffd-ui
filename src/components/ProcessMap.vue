@@ -5,8 +5,8 @@
       :accessToken="mapboxAccessToken"
       map-style="mapbox://styles/mapbox/satellite-streets-v12"
       style="height: 400px"
-      :center="[0, 0]"
-      :zoom="1"
+      :center="mapCenter"
+      :zoom="mapZoom"
       @mb-load="mapLoaded"
     >
       <MapboxNavigationControl />
@@ -67,8 +67,8 @@ import type {
   Process,
   ProductInstance,
   TransportMethod,
-} from '@fairfooddata/types';
-import { computed } from 'vue';
+} from '@trace.market/types';
+import { computed, ref, onMounted } from 'vue';
 import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';
 import { DateTime } from 'luxon';
 import FoodDataBanner from './FoodDataBanner.vue';
@@ -88,6 +88,25 @@ const processes = computed(() => findProcesses(props.data));
 
 const mapboxAccessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
+const mapCenter = ref<[number, number]>([0, 0]);
+const mapZoom = ref(1);
+
+onMounted(() => {
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        mapCenter.value = [position.coords.longitude, position.coords.latitude];
+        mapZoom.value = 4;
+      },
+      () => {
+        // Fallback to default if user denies or error occurs
+        mapCenter.value = [0, 0];
+        mapZoom.value = 1;
+      }
+    );
+  }
+});
+
 function findProcesses(instance: ProductInstance): Process[] {
   return 'process' in instance && instance.process !== undefined
     ? [
@@ -106,6 +125,15 @@ function findProcesses(instance: ProductInstance): Process[] {
 }
 
 function mapLoaded({ target }: { target: MapboxGl.Map }) {
+  // Switch to globe projection and enable atmospheric fog for 3D look
+  target.setProjection('globe');
+  target.setFog({
+    color: 'rgba(255,255,255,0.4)', // soften brightness of fog glow
+    'horizon-blend': 0.05, // reduce blend to limit white wash at horizon
+    range: [0.8, 6], // start fog a bit farther and cap density sooner
+    'star-intensity': 0.1, // lower star glow in night view
+  });
+
   // technique based on https://jsfiddle.net/2mws8y3q/
   // an array of valid line-dasharray values, specifying the lengths of the alternating dashes and gaps that form the dash pattern
   const dashArraySequence = [

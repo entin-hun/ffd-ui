@@ -42,7 +42,7 @@ import ProcessMap from 'components/ProcessMap.vue';
 import FoodChainTree from './FoodChainTree.vue';
 import { Ref, computed, onMounted, ref } from 'vue';
 import { useFetch } from '@vueuse/core';
-import type { Pokedex, ProductInstance, TokenId } from '@fairfooddata/types';
+import type { Pokedex, ProductInstance, TokenId } from '@trace.market/types';
 import { example } from '../example';
 
 import { api } from 'boot/axios';
@@ -56,10 +56,11 @@ interface MinterMetadataResponse {
 const $q = useQuasar();
 
 const props = defineProps<{
-  tokenId: TokenId | undefined;
+  tokenId?: TokenId;
+  data?: Pokedex;
 }>();
 
-if (props.tokenId === undefined)
+if (!props.tokenId && !props.data)
   $q.notify({
     message: 'Demo mode',
     caption: 'URL parameters missing',
@@ -69,7 +70,7 @@ if (props.tokenId === undefined)
     closeBtn: true,
   });
 
-const data: Ref<Pokedex | undefined> = ref(undefined);
+const data: Ref<Pokedex | undefined> = ref(props.data);
 const tree = ref<InstanceType<typeof FoodChainTree>>();
 
 function resolveTokenIds(instance: ProductInstance): Promise<void> {
@@ -112,6 +113,11 @@ function resolveTokenIds(instance: ProductInstance): Promise<void> {
 }
 
 onMounted(() => {
+  if (props.data) {
+    resolveTokenIds(props.data.instance).then(() => (data.value = props.data));
+    return;
+  }
+
   if (request === undefined)
     resolveTokenIds(example.instance).then(() => (data.value = example));
   else
@@ -131,7 +137,7 @@ function showProcess(processId: number) {
 // const assertPokedex = typia.createAssert<Pokedex>();
 
 const request =
-  props.tokenId !== undefined
+  !props.data && props.tokenId !== undefined
     ? useFetch(`https://api.trace.market/metadata/${props.tokenId}`, {
         // afterFetch(ctx) {
         //   assertPokedex(ctx);

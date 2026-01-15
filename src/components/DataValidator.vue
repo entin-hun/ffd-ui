@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FoodInstance, ProductInstance } from '@fairfooddata/types';
+import type { FoodInstance, ProductInstance } from '@trace.market/types';
 
 import { computed } from 'vue';
 
