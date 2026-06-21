@@ -19,7 +19,7 @@
 
     <section
       v-if="
-        title || subtitle || description || productImage || manufacturerLogo
+        title || subtitle || description || resolvedProductImage || manufacturerLogo
       "
       class="section"
     >
@@ -41,12 +41,15 @@
           <p v-if="subtitle" class="subtitle">{{ subtitle }}</p>
           <p v-if="description">{{ description }}</p>
         </div>
-        <div v-if="productImage" class="content-product">
+        <div v-if="resolvedProductImage" class="content-product">
           <img
-            :src="productImage"
+            :src="resolvedProductImage"
             alt="Product image"
             class="product-image"
             style="max-width: 300px"
+            referrerpolicy="no-referrer"
+            crossorigin="anonymous"
+            @error="onProductImageError"
           />
         </div>
       </div>
@@ -55,11 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { ProductInstance } from '@trace.market/types';
 
 type HeaderProps = {
-  instance: ProductInstance;
+  instance?: ProductInstance;
   headerLogo?: string;
   manufacturerLogo?: string;
   title?: string;
@@ -80,9 +83,83 @@ const subtitle = computed(() => props.subtitle ?? props.instance?.type ?? '');
 const description = computed(
   () => props.description ?? props.instance?.description ?? ''
 );
-const productImage = computed(
-  () => props.productImage ?? props.instance?.pictureURL ?? ''
+
+function findNestedPictureURL(instance?: ProductInstance): string | undefined {
+  if (!instance) return undefined;
+
+  const directUrl =
+    (instance as { pictureURL?: string }).pictureURL ??
+    (instance as { pictureUrl?: string }).pictureUrl;
+  if (typeof directUrl === 'string' && directUrl.length > 0) return directUrl;
+
+  if (!('process' in instance) || instance.process === undefined) return undefined;
+
+  for (const input of instance.process.inputInstances) {
+    if (typeof input.instance !== 'object' || !('category' in input.instance)) {
+      continue;
+    }
+
+    const nested = findNestedPictureURL(input.instance as ProductInstance);
+    if (nested) return nested;
+  }
+
+  return undefined;
+}
+
+function normalizeImageUrl(raw?: string): string | undefined {
+  if (typeof raw !== 'string') return undefined;
+
+  const trimmed = raw.trim().replace(/^"+|"+$/g, '').replace(/^'+|'+$/g, '');
+  if (trimmed.length === 0) return undefined;
+
+  if (trimmed.startsWith('//')) return `https:${trimmed}`;
+  if (trimmed.startsWith('ipfs://'))
+    return `https://ipfs.io/ipfs/${trimmed.slice('ipfs://'.length)}`;
+
+  return trimmed;
+}
+
+function toProxyImageUrl(raw: string): string | undefined {
+  if (!/^https?:\/\//i.test(raw)) return undefined;
+
+  const withoutProtocol = raw.replace(/^https?:\/\//i, '');
+  return `https://images.weserv.nl/?url=${encodeURIComponent(withoutProtocol)}`;
+}
+
+const productImageCandidates = computed(() => {
+  const normalized = [
+    props.productImage,
+    props.instance?.pictureURL,
+    (props.instance as { pictureUrl?: string } | undefined)?.pictureUrl,
+    findNestedPictureURL(props.instance),
+  ]
+    .map((value) => normalizeImageUrl(value))
+    .filter((value): value is string => typeof value === 'string' && value.length > 0);
+
+  const candidates = normalized.flatMap((url) => {
+    const proxy = toProxyImageUrl(url);
+    // Prefer proxy first because some hosts block hotlinking via Referer.
+    return proxy ? [proxy, url] : [url];
+  });
+
+  return [...new Set(candidates)];
+});
+
+const productImageIndex = ref(0);
+
+watch(productImageCandidates, () => {
+  productImageIndex.value = 0;
+});
+
+const resolvedProductImage = computed(
+  () => productImageCandidates.value[productImageIndex.value] ?? ''
 );
+
+function onProductImageError() {
+  if (productImageIndex.value < productImageCandidates.value.length - 1) {
+    productImageIndex.value += 1;
+  }
+}
 </script>
 
 <style scoped>
@@ -133,10 +210,12 @@ h6 {
 
 h1 {
   font-size: 28px;
+  line-height: 1.6;
 }
 
 h2 {
   font-size: 24px;
+  line-height: 1.6;
 }
 
 h3 {

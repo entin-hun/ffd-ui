@@ -41,9 +41,14 @@ import type {
   Priced,
   Site,
 } from '@trace.market/types';
-import { DateTime, Duration } from 'luxon';
+import { Duration } from 'luxon';
 import { Ref, computed, onMounted, ref } from 'vue';
-import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';
+import {
+  formatTimestamp,
+  getProcessIcon,
+  getProcessLabel,
+  getTransportLabel,
+} from './utils';
 import FoodDataBanner from './FoodDataBanner.vue';
 
 let keyCounter = 0;
@@ -224,8 +229,13 @@ function priceToNode(price: Price): QTreeNode {
 }
 
 function siteToNode(site: Site): QTreeNode {
+  const siteName =
+    (site as { name?: string; label?: string }).name ||
+    (site as { name?: string; label?: string }).label ||
+    'Unnamed Facility';
+
   return {
-    label: site.label || 'Unnamed Facility',
+    label: siteName,
     icon: 'factory',
     children: [locationToNode(site.location)],
   };
@@ -326,9 +336,7 @@ function locationToNode(location: GeoJSON.Point): QTreeNode {
 
 function timestampToNode(timestamp: number): QTreeNode {
   return {
-    label: `Time: ${DateTime.fromSeconds(timestamp).toLocaleString(
-      DateTime.DATETIME_MED_WITH_SECONDS
-    )}`,
+    label: `Time: ${formatTimestamp(timestamp)}`,
     icon: 'access_time',
   };
 }
@@ -479,9 +487,7 @@ function expiryDateToNodes(expiryDate?: number): QTreeNode[] {
   return expiryDate !== undefined
     ? [
         {
-          label: `Expiry date: ${DateTime.fromSeconds(
-            expiryDate
-          ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS)}`,
+          label: `Expiry date: ${formatTimestamp(expiryDate)}`,
           icon: 'alarm_off',
         },
       ]

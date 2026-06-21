@@ -88,7 +88,7 @@ function checkNutrients(instance: FoodInstance): string[] {
   return inputErrors;
 }
 
-function checkTransports(instance: ProductInstance): string[] {
+function checkTransports(): string[] {
   /* TODO check if every inputInstance is either geographically
    * local or has transport
    */

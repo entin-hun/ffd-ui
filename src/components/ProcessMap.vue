@@ -11,11 +11,11 @@
     >
       <MapboxNavigationControl />
       <MapboxMarker
-        v-for="process in processes"
-        :key="process.timestamp"
+        v-for="entry in processEntries"
+        :key="`${entry.process.timestamp}-${entry.ownerId ?? ''}-${entry.instanceType ?? ''}`"
         :lng-lat="[
-          process.site.location.coordinates[0],
-          process.site.location.coordinates[1],
+          entry.process.site.location.coordinates[0],
+          entry.process.site.location.coordinates[1],
         ]"
         :popup="{
           offset: [0, -30],
@@ -24,25 +24,38 @@
         }"
       >
         <template v-slot:popup>
-          <div class="text-subtitle1">{{ getProcessLabel(process) }}</div>
+          <div class="text-subtitle1">{{ getProcessLabel(entry.process) }}</div>
           <div class="text-caption">
-            {{
-              DateTime.fromSeconds(process.timestamp).toLocaleString(
-                DateTime.DATETIME_MED_WITH_SECONDS
-              )
-            }}
+            {{ formatTimestamp(entry.process.timestamp) }}
           </div>
-          <a href="#" @click.prevent="emit('showProcess', process.timestamp)"
-            >Go to details</a
-          >
-          <q-icon name="arrow_right" />
+          <div class="popup-actions row items-center no-wrap q-gutter-sm">
+            <a href="#" @click.prevent="emit('showProcess', entry.process.timestamp)"
+              >Go to details</a
+            >
+            <q-icon name="arrow_right" />
+            <q-btn
+              dense
+              round
+              flat
+              size="sm"
+              color="primary"
+              icon="search"
+              aria-label="Open in Google Maps"
+              :href="buildGoogleMapsUrl(entry)"
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          </div>
         </template>
         <template v-slot:default>
-          <q-avatar
-            :icon="getProcessIcon(process)"
-            color="white"
-            text-color="black"
-          />
+          <div class="marker-pin">
+            <q-avatar
+              :icon="getProcessIcon(entry.process)"
+              color="white"
+              text-color="black"
+              class="marker-avatar"
+            />
+          </div>
         </template>
       </MapboxMarker>
       <MapboxLayer
@@ -67,10 +80,15 @@ import type {
   Process,
   ProductInstance,
   TransportMethod,
+  Site,
 } from '@trace.market/types';
 import { computed, ref, onMounted } from 'vue';
-import { getProcessIcon, getProcessLabel, getTransportLabel } from './utils';
-import { DateTime } from 'luxon';
+import {
+  formatTimestamp,
+  getProcessIcon,
+  getProcessLabel,
+  getTransportLabel,
+} from './utils';
 import FoodDataBanner from './FoodDataBanner.vue';
 import GeoJSON from 'geojson';
 import MapboxGl from 'mapbox-gl';
@@ -84,7 +102,13 @@ const emit = defineEmits<{
   showProcess: [timestamp: number];
 }>();
 
-const processes = computed(() => findProcesses(props.data));
+interface ProcessEntry {
+  process: Process;
+  ownerId?: string;
+  instanceType?: string;
+}
+
+const processEntries = computed(() => findProcessEntries(props.data));
 
 const mapboxAccessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
@@ -107,21 +131,61 @@ onMounted(() => {
   }
 });
 
-function findProcesses(instance: ProductInstance): Process[] {
+function findProcessEntries(instance: ProductInstance): ProcessEntry[] {
   return 'process' in instance && instance.process !== undefined
     ? [
-        instance.process,
+        {
+          process: instance.process,
+          ownerId:
+            'ownerId' in instance && typeof instance.ownerId === 'string'
+              ? instance.ownerId
+              : undefined,
+          instanceType:
+            'type' in instance && typeof instance.type === 'string'
+              ? instance.type
+              : undefined,
+        },
         ...instance.process.inputInstances
           .map((inputInstance) =>
             typeof inputInstance.instance === 'object' &&
             'process' in inputInstance.instance &&
             inputInstance.instance.process !== undefined
-              ? findProcesses(inputInstance.instance)
+              ? findProcessEntries(inputInstance.instance)
               : []
           )
           .flat(),
       ]
     : [];
+}
+
+function getSiteName(site: Site): string {
+  const raw = (site as { name?: string; label?: string }).name ??
+    (site as { name?: string; label?: string }).label;
+  return typeof raw === 'string' && raw.trim().length > 0
+    ? raw
+    : 'Unnamed Facility';
+}
+
+function buildGoogleMapsUrl(entry: ProcessEntry): string {
+  const [lng, lat] = entry.process.site.location.coordinates;
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+    return 'https://www.google.com/maps';
+  }
+
+  const queryText = [
+    getSiteName(entry.process.site),
+    entry.ownerId,
+    entry.instanceType,
+  ]
+    .filter((value): value is string => typeof value === 'string' && value.length > 0)
+    .join(' ');
+
+  const params = new URLSearchParams();
+  params.set('q', queryText || `${lat},${lng}`);
+  params.set('ll', `${lat},${lng}`);
+  params.set('z', '15');
+
+  return `https://www.google.com/maps?${params.toString()}`;
 }
 
 function mapLoaded({ target }: { target: MapboxGl.Map }) {
@@ -253,3 +317,23 @@ function getTransports(instance: ProductInstance): InstanceTransport[] {
     );
 }
 </script>
+
+<style scoped>
+.marker-pin {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.popup-actions {
+  margin-top: 2px;
+}
+</style>

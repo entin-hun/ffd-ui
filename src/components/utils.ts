@@ -1,4 +1,5 @@
 import { Process, TransportMethod } from '@trace.market/types';
+import { DateTime } from 'luxon';
 
 export const chartColors = [
   'chart-1',
@@ -59,6 +60,17 @@ export function getProcessLabel(process: Process) {
   return 'type' in process
     ? processTypeLabels.get(process.type)?.text || 'Unknown process'
     : 'BUG: Process with no type';
+}
+
+export function normalizeTimestampSeconds(timestamp: number): number {
+  // Most historical payloads used seconds, but newer payloads may use milliseconds.
+  return timestamp > 1e12 ? Math.floor(timestamp / 1000) : timestamp;
+}
+
+export function formatTimestamp(timestamp: number): string {
+  return DateTime.fromSeconds(
+    normalizeTimestampSeconds(timestamp)
+  ).toLocaleString(DateTime.DATETIME_MED_WITH_SECONDS);
 }
 
 export interface TransportMeta {

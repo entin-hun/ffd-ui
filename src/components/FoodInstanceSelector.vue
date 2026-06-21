@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="foodNutrients.length > 1"
-    class="row justify-center q-pa-md"
-  >
+  <div v-if="foodNutrients.length > 1" class="row justify-center q-pa-md">
     <q-chip
       clickable
       v-for="(foodNutrient, index) in foodNutrients"
